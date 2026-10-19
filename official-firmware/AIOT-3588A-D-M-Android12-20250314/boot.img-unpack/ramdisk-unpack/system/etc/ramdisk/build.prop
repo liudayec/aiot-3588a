@@ -1,0 +1,22 @@
+####################################
+# from generate-common-build-props
+# These properties identify this partition image.
+####################################
+ro.product.bootimage.brand=rockchip
+ro.product.bootimage.device=rk3588_s
+ro.product.bootimage.manufacturer=rockchip
+ro.product.bootimage.model=rk3588_s
+ro.product.bootimage.name=rk3588_s
+ro.bootimage.build.date=Fri Mar 14 22:08:26 CST 2025
+ro.bootimage.build.date.utc=1741961306
+ro.bootimage.build.fingerprint=rockchip/rk3588_s/rk3588_s:12/SQ3A.220705.003.A1/gxg03142208:userdebug/release-keys
+ro.bootimage.build.id=SQ3A.220705.003.A1
+ro.bootimage.build.tags=release-keys
+ro.bootimage.build.type=userdebug
+ro.bootimage.build.version.incremental=eng.gxg.20250314.221026
+ro.bootimage.build.version.release=12
+ro.bootimage.build.version.release_or_codename=12
+ro.bootimage.build.version.sdk=32
+# Auto-added by post_process_props.py
+persist.sys.usb.config=none
+# end of file
