@@ -47,6 +47,29 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 * [外壳机箱](docs/外壳机箱.md)
 * [需求清单](docs/需求清单.md)
 
+## 适配进度
+
+| 仓库地址 | 分支 | 适配进度 | 备注 |
+| :--- | :--- | :--- | :--- |
+| `https://github.com/u-boot/u-boot` | `main` | ✅ 已完成 | 初步完成 |
+
+
+| 仓库地址 | 分支 | 适配进度 | 备注 |
+| :--- | :--- | :--- | :--- |
+| `https://mirrors.cernet.edu.cn/linux-stable.git` | `master` | ✅ 已完成 | 初步完成, 7.3内核 |
+| `https://github.com/ophub/linux-6.18.y.git` | `ophub_6.18.y` | ✅ 已完成 | 初步完成 |
+| `https://github.com/rockchip-linux/kernel.git` | `develop-6.12` | ✅ 已完成 | 初步完成 |
+| `https://github.com/rockchip-linux/kernel.git` | `develop-6.6` | ✅ 已完成 | 初步完成 |
+| `https://github.com/rockchip-linux/kernel.git` | `develop-6.1` | ✅ 已完成 | 初步完成 |
+| `https://gitee.com/anolis/cloud-kernel` | `devel-6.6` | ✅ 已完成 | 初步完成 |
+| `https://atomgit.com/openeuler/kernel` | `OLK-6.6` | ✅ 已完成 | 初步完成 |
+| `https://gitee.com/OpenCloudOS/OpenCloudOS-Kernel` | `linux-6.6` | ✅ 已完成 | 初步完成 |
+| `https://github.com/ophub/ophub_6.1.y` | `master` | ✅ 已完成 | 初步完成 |
+| `https://github.com/ophub/ophub_6.6.y` | `master` | ✅ 已完成 | 初步完成 |
+| `https://github.com/ophub/ophub_6.12.y` | `master` | ✅ 已完成 | 初步完成 |
+
+
+
 ## 效果图
 
 ![](./images/1859268484500.png)
@@ -65,6 +88,23 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 ```text
 辛苦各位抽空测试验证固件，如有缺陷，提issue，谢谢 
 ```
+
+
+## maskrom短接点、TTL、硬盘电源
+
+- maskrom短接点：
+
+在CPU旁边，将MASKROM点位于TF卡铁壳表面短接即可
+
+![](./images/6124279537800.png)
+
+
+- debug调试口
+
+* 调试口在主板正面，有丝印。仅需要连接GND、RX、TX三根连线即可，其余不用接。接口规格是SH1.0mm 6pin，建议购买转杜邦线头的版本。
+* 调试口需要配置USB转TTL模块（单独购买），建议选择CH340 （通用款即可，没有特殊要求）
+
+![](./images/6163122396100.png)
 
 ## 免责申明
 
