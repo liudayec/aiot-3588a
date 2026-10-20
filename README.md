@@ -12,65 +12,40 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 
 ![](./images/1016993420400.png)
 
-
-
 ## 相关站点
 
 * [视美泰主官网](https://www.shimeta.com.cn)
 * [视美泰开源技术资料社区](http://forum.shimetapi.cn/wiki/OpenSource_OH/)
 * [视美泰OpenHarmony入门指引(密码123456)](https://www.showdoc.com.cn/openharmony/0)
 
-
-
 ## 目录
 
-* [开发板基本信息](docs/开发板基本信息.md)
-* [uboot适配](docs/uboot适配/uboot适配.md)
-* [驱动](docs/驱动.md)
-    * [网卡驱动](docs/驱动/网卡驱动/网卡驱动.md)
-    * [WIFI驱动](docs/驱动/WLAN驱动/WIFI驱动.md)
-    * [蓝牙驱动](docs/驱动/蓝牙驱动/蓝牙驱动.md)
-    * [LED驱动](docs/驱动/LED驱动/LED驱动.md)
-    * [USB驱动](docs/驱动/USB驱动/USB驱动.md)
-    * [HDMI驱动](docs/驱动/HDMI驱动/HDMI驱动.md)
-    * [SATA驱动](docs/驱动/SATA驱动/SATA驱动.md)
-    * [音频驱动](docs/驱动/音频驱动/音频驱动.md)
-    * [按键驱动](docs/驱动/按键驱动/按键驱动.md)
-    * [RTC时钟驱动](docs/驱动/RTC时钟驱动/RTC时钟驱动.md)
-    * [风扇驱动](docs/驱动/风扇驱动/风扇驱动.md)
-    * [电源驱动](docs/驱动/电源驱动/电源驱动.md)
-    * [看门狗](docs/驱动/看门狗/看门狗.md)
-* [系统](docs/系统.md)
-    * [Android12](docs/系统/Android12/Android12.md)
-    * [Ubuntu22](docs/系统/Ubuntu22/Ubuntu22.md)
-    * [Ubuntu20](docs/系统/Ubuntu20/Ubuntu20.md)
-    * [armbian debian13](docs/系统/armbian_debian13/armbian_debian13.md)
-
-
-
-## 固件进展
-
-1. [基于官方Ubuntu2204修改（5.10.160官方内核）- 测试阶段](https://github.com/yifengyou/aiot-3588a/releases/tag/official_5.10.160_image)
-2. [rockchip-linux仓库（develop-6.6内核） - 测试阶段](https://github.com/yifengyou/aiot-3588a/releases/tag/rockchip-linux_develop-6.6_image)
-3. [rockchip-linux仓库（develop-6.1内核） - 测试阶段](https://github.com/yifengyou/aiot-3588a/releases/tag/rockchip-linux_develop-6.1_image)
-4. [armbian内核仓库（rk-6.1-rkr5.1内核） - 适配阶段](https://github.com/yifengyou/aiot-3588a/releases/tag/armbian_rk-6.1-rkr5.1_image)
-5. [radxa内核仓库（linux-6.1-stan-rkr5.1内核） - 适配阶段](https://github.com/yifengyou/aiot-3588a/releases/tag/radxa_linux-6.1-stan-rkr5.1_image)
-6. [friendlyarm内核仓库（nanopi6-v6.1内核） - 适配阶段](https://github.com/yifengyou/aiot-3588a/releases/tag/friendlyarm_nanopi6-v6.1.y_image)
-6. [lubancat内核仓库（develop-6.1内核） - 适配阶段](https://github.com/yifengyou/aiot-3588a/releases/tag/lubancat_lbc-develop-6.1_image)
-
-
-```text
-辛苦各位抽空测试验证固件，如有缺陷，提issue，谢谢 
-```
-
-
-
-## 免责声明
-
-* 与官方无任何关联
-* 仅学习交流，无任何商业用途
-
-
+* [硬件规格](docs/硬件规格.md)
+* [固件列表](docs/固件列表.md)
+* [刷机指引](docs/rom_update_guide.md)
+  * [ophub armbian](docs/刷机指引/ophub_armbian.md)
+  * [ophub 飞牛](docs/刷机指引/ophub_fnos.md)
+  * [ophub openwrt](docs/刷机指引/ophub_openwrt.md)
+  * [android12固件](docs/刷机指引/android12.md)
+  * [android13固件](docs/刷机指引/android13.md)
+  * [android14固件](docs/刷机指引/android14.md)
+* [适配记录](docs/适配记录.md)
+  * [uboot v2017](docs/适配记录/uboot2017.md)
+  * [uboot v2026](docs/适配记录/uboot2026.md)
+  * [recovery](docs/适配记录/recovery.md)
+  * [ophub 6.18.y](docs/适配记录/ophub_6.18.y.md)
+  * [ophub 6.6.y](docs/适配记录/ophub_6.6.y.md)
+  * [ophub 6.1.y](docs/适配记录/ophub_6.1.y.md)
+  * [openanolis devel-6.6](docs/适配记录/openanolis_devel-6.6.md)
+  * [opencloudos devel-6.6](docs/适配记录/opencloudos_devel-6.6.md)
+  * [rockchip-linux develop-6.12](docs/适配记录/rockchip-linux_develop-6.12.md)
+  * [linux-stable](docs/适配记录/linux-stable.md)
+  * [android12适配](docs/适配记录/android/android12.md)
+  * [android13适配](docs/适配记录/android/android13.md)
+  * [android14适配](docs/适配记录/android/android14.md)
+  * [edk2 uefi适配](docs/适配记录/edk2_uefi.md)
+* [外壳机箱](docs/外壳机箱.md)
+* [需求清单](docs/需求清单.md)
 
 ## 效果图
 
@@ -78,4 +53,15 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 
 ![](./images/2413266081300.png)
 
+```text
+辛苦各位抽空测试验证固件，如有缺陷，提issue，谢谢 
+```
+
+## 免责申明
+
+- 本仓库所提供的内容均基于公开、合法渠道整理，仅供用户参考与学习之用。
+- 严格遵守国家相关法律法规，尊重并保护个人隐私及知识产权。
+- 如您认为相关内容涉及您的隐私、版权或其他合法权益，请及时联系，将依法核实并在必要时予以删除或下架。
+- 对于因使用或无法使用本网站/平台内容所引发的任何直接或间接损失，不承担任何法律责任。
+- 用户在使用过程中应自行判断信息的适用性，并承担相应风险。
 
