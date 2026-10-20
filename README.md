@@ -49,6 +49,15 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 
 ## 效果图
 
+![](./images/1859268484500.png)
+
+![](./images/1939771776800.png)
+
+![](./images/1961836196400.png)
+
+![](./images/1994943451700.png)
+
+
 ![](./images/1635722814300.png)
 
 ![](./images/2413266081300.png)
