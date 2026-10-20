@@ -9,7 +9,7 @@ DTB_NAME="rk3588-aiot-3588a.dtb"
 BUILD_TAG="${BOARD_NAME}_${KERNEL_RELEASE}_${set_rootfs}"
 SPL_LOADER="rk3588_spl_loader_v1.21.114.bin"
 UBOOT_URL="https://github.com/yifengyou/rockchip-uboot-mainline/releases/download/aiot-3588a-uboot"
-KERNEL_URL="https://github.com/yifengyou/rockchip-openeuler/releases/download/aiot-3588a_OLK-6.6"
+KERNEL_URL="https://github.com/yifengyou/rockchip-openeuler/releases/download/aiot-3588a_olk-6.6"
 RECOVERY_URL="https://github.com/yifengyou/rockchip-ophub-linux-6.18.y/releases/download/aiot-3588a-recovery"
 ROOTFS_BASE_URL="https://github.com/yifengyou/kdev/releases/download"
 

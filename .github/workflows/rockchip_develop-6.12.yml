@@ -307,8 +307,8 @@ jobs:
             -e set_rootfs=${{ matrix.set_rootfs }} \
             ubuntu:22.04 \
             bash -c "
-              chmod +x /workspace/kdevbuild/openeuler_olk6.6_image.sh ;
-              /workspace/kdevbuild/openeuler_olk6.6_image.sh
+              chmod +x /workspace/kdevbuild/rockchip_develop-6.12_image.sh ;
+              /workspace/kdevbuild/rockchip_develop-6.12_image.sh
             "
 
       - name: List build output
