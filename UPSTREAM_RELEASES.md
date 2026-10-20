@@ -3,42 +3,102 @@
 本文件由 GitHub Actions 自动生成。源码、分支和标签会同步到本 fork；固件二进制仍托管在原作者的上游 Release 中，下载链接直指上游。
 
 - 发布数：23
-- 固件文件数：1785
-- 文件总大小：935.4 GiB
+- 固件文件数：2038
+- 文件总大小：1.0 TiB
 - 上游仓库：https://github.com/yifengyou/aiot-3588a
 
 ## rockchip_develop-6.6
 
 - Tag: [`rockchip_develop-6.6`](https://github.com/yifengyou/aiot-3588a/releases/tag/rockchip_develop-6.6)
 - Published: 2026-10-20T10:11:01Z
-- Assets: 46
+- Assets: 118
 
 | 文件 | 大小 | 下载 |
 |---|---:|---|
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-23.0-aarch64.rar` | 556.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-23.0-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-23.1-aarch64.rar` | 485.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-23.1-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-23.2-aarch64.rar` | 476.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-23.2-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-23.3-aarch64.rar` | 538.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-23.3-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-23.4-aarch64.rar` | 568.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-23.4-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-7.9-GA-aarch64-ANCK.rar` | 536.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-7.9-GA-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-7.9-GA-aarch64-RHCK.rar` | 548.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-7.9-GA-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.10-aarch64-ANCK.rar` | 910.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.10-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.10-aarch64-RHCK.rar` | 908.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.10-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.2-GA-aarch64-ANCK.rar` | 414.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.2-GA-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.2-GA-aarch64-RHCK.rar` | 411.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.2-GA-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.4-aarch64-ANCK.rar` | 494.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.4-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.4-aarch64-RHCK.rar` | 499.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.4-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.6-aarch64-ANCK.rar` | 735.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.6-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.6-aarch64-RHCK.rar` | 775.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.6-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.8-aarch64-ANCK.rar` | 701.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.8-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.8-aarch64-RHCK.rar` | 791.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.8-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.9-aarch64-ANCK.rar` | 804.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.9-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_AnolisOS-8.9-aarch64-RHCK.rar` | 780.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_AnolisOS-8.9-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-33-1.2.aarch64.rar` | 247.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-33-1.2.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-34-1.2.aarch64.rar` | 238.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-34-1.2.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-35-1.2.aarch64.rar` | 294.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-35-1.2.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-36-1.5.aarch64.rar` | 339.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-36-1.5.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-37-1.7.aarch64.rar` | 374.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-37-1.7.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-38-1.6.aarch64.rar` | 373.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-38-1.6.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-39-1.5.aarch64.rar` | 417.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-39-1.5.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-Generic-41-1.4.aarch64.rar` | 417.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-Generic-41-1.4.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-Generic.aarch64-40-1.14.rar` | 377.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-Generic.aarch64-40-1.14.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-UEFI-UKI-41-1.4.aarch64.rar` | 352.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-UEFI-UKI-41-1.4.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-UEFI-UKI.aarch64-40-1.14.rar` | 320.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Cloud-Base-UEFI-UKI.aarch64-40-1.14.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Server-Guest-Generic-42-1.1.aarch64.rar` | 409.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Server-Guest-Generic-42-1.1.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_Fedora-Server-Guest-Generic-43-1.6.aarch64.rar` | 534.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_Fedora-Server-Guest-Generic-43-1.6.aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_OpenCloudOS-8.8-5.4.119-20.0009.29-20230817.1028-aarch64.rar` | 530.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-8.8-5.4.119-20.0009.29-20230817.1028-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-EC2-9.2-20250226.0.aarch64.rar` | 392.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-EC2-9.2-20250226.0.aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-8.10-20240729.0-20240730.1138-aarch64.rar` | 731.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-8.10-20240729.0-20240730.1138-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20240529.0.aarch64.rar` | 669.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20240529.0.aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20240711.0.aarch64.rar` | 668.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20240711.0.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20240807.0.aarch64.rar` | 669.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20240807.0.aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20240919.0.aarch64.rar` | 670.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20240919.0.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20241030.0.aarch64.rar` | 669.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20241030.0.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20241211.0.aarch64.rar` | 385.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20241211.0.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20250226.0.aarch64.rar` | 398.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20250226.0.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20250327.0.aarch64.rar` | 392.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20250327.0.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20250421.0.aarch64.rar` | 394.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.2-20250421.0.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.4-20250820.0.aarch64.rar` | 394.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.4-20250820.0.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.4-20251120.0.aarch64.rar` | 508.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.4-20251120.0.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.4-20251223.0.aarch64.rar` | 549.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_OpenCloudOS-GenericCloud-9.4-20251223.0.aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_armbian_bookworm_gnome_aarch64.rar` | 1.0 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_bookworm_gnome_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_bookworm_mini_aarch64.rar` | 561.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_bookworm_mini_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_bookworm_xfce_aarch64.rar` | 1001.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_bookworm_xfce_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_bullseye_mini_aarch64.rar` | 525.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_bullseye_mini_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_armbian_forky_gnome_aarch64.rar` | 990.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_forky_gnome_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_forky_mini_aarch64.rar` | 621.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_forky_mini_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_armbian_forky_xfce_aarch64.rar` | 1.1 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_forky_xfce_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_jammy_gnome_aarch64.rar` | 1007.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_jammy_gnome_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_jammy_mini_aarch64.rar` | 642.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_jammy_mini_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_armbian_jammy_xfce_aarch64.rar` | 1.1 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_jammy_xfce_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_armbian_noble_gnome_aarch64.rar` | 1016.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_noble_gnome_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_noble_mini_aarch64.rar` | 634.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_noble_mini_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_noble_xfce_aarch64.rar` | 1.1 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_noble_xfce_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_plucky_gnome_aarch64.rar` | 1.1 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_plucky_gnome_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_armbian_plucky_mini_aarch64.rar` | 602.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_plucky_mini_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_plucky_xfce_aarch64.rar` | 1.2 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_plucky_xfce_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_armbian_trixie_gnome_aarch64.rar` | 965.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_trixie_gnome_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_trixie_mini_aarch64.rar` | 615.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_trixie_mini_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_armbian_trixie_xfce_aarch64.rar` | 1002.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_armbian_trixie_xfce_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_centos_10_aarch64.rar` | 1.3 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_centos_10_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_centos_8_aarch64.rar` | 1.4 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_centos_8_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_centos_9_aarch64.rar` | 1.2 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_centos_9_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_debian_bookworm_12_arm64.rar` | 336.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_debian_bookworm_12_arm64.rar) |
+| `AIoT-3588A_6.6.89-kdev_debian_bullseye_11_arm64.rar` | 254.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_debian_bullseye_11_arm64.rar) |
+| `AIoT-3588A_6.6.89-kdev_debian_trixie_13_arm64.rar` | 286.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_debian_trixie_13_arm64.rar) |
+| `AIoT-3588A_6.6.89-kdev_fnos_1.1.19_arm64.rar` | 1.6 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_fnos_1.1.19_arm64.rar) |
 | `AIoT-3588A_6.6.89-kdev_istoreos_24.10.1_arm64.rar` | 208.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_istoreos_24.10.1_arm64.rar) |
 | `AIoT-3588A_6.6.89-kdev_istoreos_24.10.2_arm64.rar` | 208.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_istoreos_24.10.2_arm64.rar) |
 | `AIoT-3588A_6.6.89-kdev_istoreos_24.10.3_arm64.rar` | 214.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_istoreos_24.10.3_arm64.rar) |
 | `AIoT-3588A_6.6.89-kdev_istoreos_24.10.4_arm64.rar` | 214.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_istoreos_24.10.4_arm64.rar) |
 | `AIoT-3588A_6.6.89-kdev_istoreos_24.10.5_arm64.rar` | 214.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_istoreos_24.10.5_arm64.rar) |
+| `AIoT-3588A_6.6.89-kdev_kali-linux-2025.3-cloud-genericcloud-arm64.rar` | 246.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_kali-linux-2025.3-cloud-genericcloud-arm64.rar) |
+| `AIoT-3588A_6.6.89-kdev_kali-linux-2025.4-cloud-genericcloud-arm64.rar` | 252.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_kali-linux-2025.4-cloud-genericcloud-arm64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-20.03-LTS-SP1.aarch64.rar` | 431.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-20.03-LTS-SP1.aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-20.03-LTS-SP2-aarch64.rar` | 418.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-20.03-LTS-SP2-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-20.03-LTS-SP3-aarch64.rar` | 433.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-20.03-LTS-SP3-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_openEuler-20.03-LTS-SP4-aarch64.rar` | 501.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-20.03-LTS-SP4-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-20.03-LTS.aarch64.rar` | 382.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-20.03-LTS.aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-20.09.aarch64.rar` | 424.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-20.09.aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-21.03-aarch64.rar` | 446.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-21.03-aarch64.rar) |
@@ -46,18 +106,30 @@
 | `AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-64kb-aarch64.rar` | 484.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-64kb-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-SP1-aarch64.rar` | 386.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-SP1-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-SP2-aarch64.rar` | 377.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-SP2-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-SP3-aarch64.rar` | 399.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-SP3-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-SP4-aarch64.rar` | 495.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-SP4-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-aarch64.rar` | 403.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-22.03-LTS-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-22.09-aarch64.rar` | 391.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-22.09-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_openEuler-23.03-aarch64.rar` | 400.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-23.03-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_openEuler-23.09-aarch64.rar` | 405.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-23.09-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_openEuler-24.03-LTS-SP1-aarch64.rar` | 485.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-24.03-LTS-SP1-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-24.03-LTS-SP2-aarch64.rar` | 651.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-24.03-LTS-SP2-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-24.03-LTS-SP3-aarch64.rar` | 973.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-24.03-LTS-SP3-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-24.03-LTS-aarch64.rar` | 497.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-24.03-LTS-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_openEuler-24.09-aarch64.rar` | 504.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-24.09-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_openEuler-25.03-aarch64.rar` | 602.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-25.03-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openEuler-25.09-aarch64.rar` | 910.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openEuler-25.09-aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_opencloudos-v8.6-minimal-aarch64-20230206.rar` | 514.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_opencloudos-v8.6-minimal-aarch64-20230206.rar) |
+| `AIoT-3588A_6.6.89-kdev_opencloudos-v9.0-20230317-aarch64.rar` | 462.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_opencloudos-v9.0-20230317-aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openwrt_24.10.1_aarch64.rar` | 68.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openwrt_24.10.1_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openwrt_24.10.2_aarch64.rar` | 69.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openwrt_24.10.2_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openwrt_24.10.3_aarch64.rar` | 68.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openwrt_24.10.3_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openwrt_24.10.4_aarch64.rar` | 68.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openwrt_24.10.4_aarch64.rar) |
 | `AIoT-3588A_6.6.89-kdev_openwrt_24.10.5_aarch64.rar` | 68.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_openwrt_24.10.5_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_rockylinux_10_aarch64.rar` | 279.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_rockylinux_10_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_rockylinux_8_aarch64.rar` | 277.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_rockylinux_8_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_rockylinux_9_aarch64.rar` | 287.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_rockylinux_9_aarch64.rar) |
+| `AIoT-3588A_6.6.89-kdev_ubuntu_bionic_18.04_arm64.rar` | 291.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_ubuntu_bionic_18.04_arm64.rar) |
 | `AIoT-3588A_6.6.89-kdev_ubuntu_focal_20.04_arm64.rar` | 512.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_ubuntu_focal_20.04_arm64.rar) |
 | `AIoT-3588A_6.6.89-kdev_ubuntu_jammy_22.04_arm64.rar` | 545.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_ubuntu_jammy_22.04_arm64.rar) |
 | `AIoT-3588A_6.6.89-kdev_ubuntu_noble_24.04_arm64.rar` | 418.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.6/AIoT-3588A_6.6.89-kdev_ubuntu_noble_24.04_arm64.rar) |
@@ -66,77 +138,191 @@
 
 - Tag: [`rockchip_develop-6.12`](https://github.com/yifengyou/aiot-3588a/releases/tag/rockchip_develop-6.12)
 - Published: 2026-10-20T10:10:24Z
-- Assets: 46
+- Assets: 118
 
 | 文件 | 大小 | 下载 |
 |---|---:|---|
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-23.0-aarch64.rar` | 558.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-23.0-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-23.1-aarch64.rar` | 485.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-23.1-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-23.2-aarch64.rar` | 468.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-23.2-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-23.3-aarch64.rar` | 539.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-23.3-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-23.4-aarch64.rar` | 570.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-23.4-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-7.9-GA-aarch64-ANCK.rar` | 540.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-7.9-GA-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-7.9-GA-aarch64-RHCK.rar` | 560.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-7.9-GA-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.10-aarch64-ANCK.rar` | 911.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.10-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.10-aarch64-RHCK.rar` | 910.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.10-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.2-GA-aarch64-ANCK.rar` | 415.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.2-GA-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.2-GA-aarch64-RHCK.rar` | 413.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.2-GA-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.4-aarch64-ANCK.rar` | 495.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.4-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.4-aarch64-RHCK.rar` | 523.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.4-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.6-aarch64-ANCK.rar` | 731.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.6-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.6-aarch64-RHCK.rar` | 805.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.6-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.8-aarch64-ANCK.rar` | 711.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.8-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.8-aarch64-RHCK.rar` | 793.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.8-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.9-aarch64-ANCK.rar` | 785.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.9-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_AnolisOS-8.9-aarch64-RHCK.rar` | 818.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_AnolisOS-8.9-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-33-1.2.aarch64.rar` | 248.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-33-1.2.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-34-1.2.aarch64.rar` | 239.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-34-1.2.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-35-1.2.aarch64.rar` | 296.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-35-1.2.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-36-1.5.aarch64.rar` | 341.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-36-1.5.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-37-1.7.aarch64.rar` | 376.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-37-1.7.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-38-1.6.aarch64.rar` | 375.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-38-1.6.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-39-1.5.aarch64.rar` | 419.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-39-1.5.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-Generic-41-1.4.aarch64.rar` | 419.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-Generic-41-1.4.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-Generic.aarch64-40-1.14.rar` | 379.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-Generic.aarch64-40-1.14.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-UEFI-UKI-41-1.4.aarch64.rar` | 352.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-UEFI-UKI-41-1.4.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-UEFI-UKI.aarch64-40-1.14.rar` | 323.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Cloud-Base-UEFI-UKI.aarch64-40-1.14.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Server-Guest-Generic-42-1.1.aarch64.rar` | 411.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Server-Guest-Generic-42-1.1.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_Fedora-Server-Guest-Generic-43-1.6.aarch64.rar` | 535.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_Fedora-Server-Guest-Generic-43-1.6.aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_OpenCloudOS-8.8-5.4.119-20.0009.29-20230817.1028-aarch64.rar` | 532.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-8.8-5.4.119-20.0009.29-20230817.1028-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_OpenCloudOS-EC2-9.2-20250226.0.aarch64.rar` | 396.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-EC2-9.2-20250226.0.aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-8.10-20240729.0-20240730.1138-aarch64.rar` | 735.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-8.10-20240729.0-20240730.1138-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20240529.0.aarch64.rar` | 671.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20240529.0.aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20240711.0.aarch64.rar` | 670.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20240711.0.aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20240807.0.aarch64.rar` | 671.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20240807.0.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20240919.0.aarch64.rar` | 671.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20240919.0.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20241030.0.aarch64.rar` | 671.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20241030.0.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20241211.0.aarch64.rar` | 384.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20241211.0.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20250226.0.aarch64.rar` | 396.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20250226.0.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20250327.0.aarch64.rar` | 392.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20250327.0.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20250421.0.aarch64.rar` | 394.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.2-20250421.0.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.4-20250820.0.aarch64.rar` | 392.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.4-20250820.0.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.4-20251120.0.aarch64.rar` | 513.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.4-20251120.0.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.4-20251223.0.aarch64.rar` | 554.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_OpenCloudOS-GenericCloud-9.4-20251223.0.aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_bookworm_gnome_aarch64.rar` | 1.0 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_bookworm_gnome_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_bookworm_mini_aarch64.rar` | 561.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_bookworm_mini_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_armbian_bookworm_xfce_aarch64.rar` | 1002.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_bookworm_xfce_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_bullseye_mini_aarch64.rar` | 527.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_bullseye_mini_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_forky_gnome_aarch64.rar` | 992.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_forky_gnome_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_forky_mini_aarch64.rar` | 617.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_forky_mini_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_forky_xfce_aarch64.rar` | 1.1 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_forky_xfce_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_jammy_gnome_aarch64.rar` | 1012.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_jammy_gnome_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_jammy_mini_aarch64.rar` | 642.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_jammy_mini_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_armbian_jammy_xfce_aarch64.rar` | 1.1 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_jammy_xfce_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_noble_gnome_aarch64.rar` | 1016.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_noble_gnome_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_armbian_noble_mini_aarch64.rar` | 636.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_noble_mini_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_armbian_noble_xfce_aarch64.rar` | 1.1 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_noble_xfce_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_plucky_gnome_aarch64.rar` | 1.1 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_plucky_gnome_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_plucky_mini_aarch64.rar` | 600.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_plucky_mini_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_plucky_xfce_aarch64.rar` | 1.2 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_plucky_xfce_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_trixie_gnome_aarch64.rar` | 969.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_trixie_gnome_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_trixie_mini_aarch64.rar` | 614.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_trixie_mini_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_armbian_trixie_xfce_aarch64.rar` | 1003.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_armbian_trixie_xfce_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_centos_10_aarch64.rar` | 1.3 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_centos_10_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_centos_8_aarch64.rar` | 1.4 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_centos_8_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_centos_9_aarch64.rar` | 1.2 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_centos_9_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_debian_bookworm_12_arm64.rar` | 338.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_debian_bookworm_12_arm64.rar) |
+| `AIoT-3588A_6.12.69-kdev_debian_bullseye_11_arm64.rar` | 254.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_debian_bullseye_11_arm64.rar) |
+| `AIoT-3588A_6.12.69-kdev_debian_trixie_13_arm64.rar` | 287.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_debian_trixie_13_arm64.rar) |
+| `AIoT-3588A_6.12.69-kdev_fnos_1.1.19_arm64.rar` | 1.6 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_fnos_1.1.19_arm64.rar) |
 | `AIoT-3588A_6.12.69-kdev_istoreos_24.10.1_arm64.rar` | 209.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_istoreos_24.10.1_arm64.rar) |
 | `AIoT-3588A_6.12.69-kdev_istoreos_24.10.2_arm64.rar` | 210.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_istoreos_24.10.2_arm64.rar) |
 | `AIoT-3588A_6.12.69-kdev_istoreos_24.10.3_arm64.rar` | 215.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_istoreos_24.10.3_arm64.rar) |
 | `AIoT-3588A_6.12.69-kdev_istoreos_24.10.4_arm64.rar` | 215.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_istoreos_24.10.4_arm64.rar) |
 | `AIoT-3588A_6.12.69-kdev_istoreos_24.10.5_arm64.rar` | 215.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_istoreos_24.10.5_arm64.rar) |
+| `AIoT-3588A_6.12.69-kdev_kali-linux-2025.3-cloud-genericcloud-arm64.rar` | 248.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_kali-linux-2025.3-cloud-genericcloud-arm64.rar) |
+| `AIoT-3588A_6.12.69-kdev_kali-linux-2025.4-cloud-genericcloud-arm64.rar` | 254.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_kali-linux-2025.4-cloud-genericcloud-arm64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-20.03-LTS-SP1.aarch64.rar` | 430.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-20.03-LTS-SP1.aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-20.03-LTS-SP2-aarch64.rar` | 419.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-20.03-LTS-SP2-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-20.03-LTS-SP3-aarch64.rar` | 427.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-20.03-LTS-SP3-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-20.03-LTS-SP4-aarch64.rar` | 503.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-20.03-LTS-SP4-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-20.03-LTS.aarch64.rar` | 384.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-20.03-LTS.aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-20.09.aarch64.rar` | 425.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-20.09.aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-21.03-aarch64.rar` | 450.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-21.03-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-21.09-aarch64.rar` | 435.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-21.09-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-64kb-aarch64.rar` | 486.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-64kb-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-SP1-aarch64.rar` | 388.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-SP1-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-SP2-aarch64.rar` | 379.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-SP2-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-SP3-aarch64.rar` | 401.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-SP3-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-SP4-aarch64.rar` | 497.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-SP4-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-aarch64.rar` | 404.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-22.03-LTS-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-22.09-aarch64.rar` | 391.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-22.09-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-23.03-aarch64.rar` | 401.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-23.03-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-23.09-aarch64.rar` | 407.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-23.09-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-24.03-LTS-SP1-aarch64.rar` | 487.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-24.03-LTS-SP1-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-24.03-LTS-SP2-aarch64.rar` | 653.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-24.03-LTS-SP2-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-24.03-LTS-SP3-aarch64.rar` | 967.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-24.03-LTS-SP3-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-24.03-LTS-aarch64.rar` | 499.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-24.03-LTS-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-24.09-aarch64.rar` | 475.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-24.09-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_openEuler-25.03-aarch64.rar` | 605.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-25.03-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openEuler-25.09-aarch64.rar` | 931.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openEuler-25.09-aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_opencloudos-v8.6-minimal-aarch64-20230206.rar` | 516.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_opencloudos-v8.6-minimal-aarch64-20230206.rar) |
+| `AIoT-3588A_6.12.69-kdev_opencloudos-v9.0-20230317-aarch64.rar` | 458.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_opencloudos-v9.0-20230317-aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openwrt_24.10.1_aarch64.rar` | 69.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openwrt_24.10.1_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openwrt_24.10.2_aarch64.rar` | 69.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openwrt_24.10.2_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openwrt_24.10.3_aarch64.rar` | 69.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openwrt_24.10.3_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openwrt_24.10.4_aarch64.rar` | 69.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openwrt_24.10.4_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_openwrt_24.10.5_aarch64.rar` | 69.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_openwrt_24.10.5_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_rockylinux_10_aarch64.rar` | 283.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_rockylinux_10_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_rockylinux_8_aarch64.rar` | 279.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_rockylinux_8_aarch64.rar) |
+| `AIoT-3588A_6.12.69-kdev_rockylinux_9_aarch64.rar` | 290.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_rockylinux_9_aarch64.rar) |
 | `AIoT-3588A_6.12.69-kdev_ubuntu_bionic_18.04_arm64.rar` | 293.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_ubuntu_bionic_18.04_arm64.rar) |
 | `AIoT-3588A_6.12.69-kdev_ubuntu_focal_20.04_arm64.rar` | 513.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_ubuntu_focal_20.04_arm64.rar) |
 | `AIoT-3588A_6.12.69-kdev_ubuntu_jammy_22.04_arm64.rar` | 549.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_ubuntu_jammy_22.04_arm64.rar) |
+| `AIoT-3588A_6.12.69-kdev_ubuntu_noble_24.04_arm64.rar` | 419.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.12/AIoT-3588A_6.12.69-kdev_ubuntu_noble_24.04_arm64.rar) |
 
 ## openeuler_olk-6.6
 
 - Tag: [`openeuler_olk-6.6`](https://github.com/yifengyou/aiot-3588a/releases/tag/openeuler_olk-6.6)
 - Published: 2026-10-20T09:54:55Z
-- Assets: 52
+- Assets: 118
 
 | 文件 | 大小 | 下载 |
 |---|---:|---|
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-23.0-aarch64.rar` | 556.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-23.0-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-23.1-aarch64.rar` | 492.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-23.1-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-23.2-aarch64.rar` | 473.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-23.2-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-23.3-aarch64.rar` | 541.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-23.3-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-23.4-aarch64.rar` | 569.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-23.4-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-7.9-GA-aarch64-ANCK.rar` | 539.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-7.9-GA-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-7.9-GA-aarch64-RHCK.rar` | 558.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-7.9-GA-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.10-aarch64-ANCK.rar` | 910.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.10-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.10-aarch64-RHCK.rar` | 911.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.10-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.2-GA-aarch64-ANCK.rar` | 415.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.2-GA-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.2-GA-aarch64-RHCK.rar` | 414.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.2-GA-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.4-aarch64-ANCK.rar` | 501.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.4-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.4-aarch64-RHCK.rar` | 508.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.4-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.6-aarch64-ANCK.rar` | 735.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.6-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.6-aarch64-RHCK.rar` | 774.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.6-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.8-aarch64-ANCK.rar` | 709.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.8-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.8-aarch64-RHCK.rar` | 791.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.8-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.9-aarch64-ANCK.rar` | 805.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.9-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_AnolisOS-8.9-aarch64-RHCK.rar` | 817.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_AnolisOS-8.9-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-33-1.2.aarch64.rar` | 246.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-33-1.2.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-34-1.2.aarch64.rar` | 238.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-34-1.2.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-35-1.2.aarch64.rar` | 295.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-35-1.2.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-36-1.5.aarch64.rar` | 339.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-36-1.5.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-37-1.7.aarch64.rar` | 374.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-37-1.7.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-38-1.6.aarch64.rar` | 373.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-38-1.6.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-39-1.5.aarch64.rar` | 417.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-39-1.5.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-Generic-41-1.4.aarch64.rar` | 418.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-Generic-41-1.4.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-Generic.aarch64-40-1.14.rar` | 377.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-Generic.aarch64-40-1.14.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-UEFI-UKI-41-1.4.aarch64.rar` | 353.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-UEFI-UKI-41-1.4.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-UEFI-UKI.aarch64-40-1.14.rar` | 321.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Cloud-Base-UEFI-UKI.aarch64-40-1.14.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Server-Guest-Generic-42-1.1.aarch64.rar` | 410.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Server-Guest-Generic-42-1.1.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_Fedora-Server-Guest-Generic-43-1.6.aarch64.rar` | 534.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_Fedora-Server-Guest-Generic-43-1.6.aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_OpenCloudOS-8.8-5.4.119-20.0009.29-20230817.1028-aarch64.rar` | 531.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-8.8-5.4.119-20.0009.29-20230817.1028-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_OpenCloudOS-EC2-9.2-20250226.0.aarch64.rar` | 394.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-EC2-9.2-20250226.0.aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-8.10-20240729.0-20240730.1138-aarch64.rar` | 734.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-8.10-20240729.0-20240730.1138-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20240529.0.aarch64.rar` | 670.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20240529.0.aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20240711.0.aarch64.rar` | 668.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20240711.0.aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20240807.0.aarch64.rar` | 671.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20240807.0.aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20240919.0.aarch64.rar` | 669.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20240919.0.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20241030.0.aarch64.rar` | 669.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20241030.0.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20241211.0.aarch64.rar` | 382.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20241211.0.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20250226.0.aarch64.rar` | 397.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20250226.0.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20250327.0.aarch64.rar` | 392.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20250327.0.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20250421.0.aarch64.rar` | 393.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.2-20250421.0.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.4-20250820.0.aarch64.rar` | 394.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.4-20250820.0.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.4-20251120.0.aarch64.rar` | 509.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.4-20251120.0.aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.4-20251223.0.aarch64.rar` | 548.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_OpenCloudOS-GenericCloud-9.4-20251223.0.aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_bookworm_gnome_aarch64.rar` | 1.0 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_bookworm_gnome_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_bookworm_mini_aarch64.rar` | 563.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_bookworm_mini_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_bookworm_xfce_aarch64.rar` | 1001.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_bookworm_xfce_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_bullseye_mini_aarch64.rar` | 529.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_bullseye_mini_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_forky_gnome_aarch64.rar` | 968.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_forky_gnome_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_forky_mini_aarch64.rar` | 615.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_forky_mini_aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_armbian_forky_xfce_aarch64.rar` | 1.1 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_forky_xfce_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_jammy_gnome_aarch64.rar` | 1017.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_jammy_gnome_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_jammy_mini_aarch64.rar` | 644.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_jammy_mini_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_jammy_xfce_aarch64.rar` | 1.1 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_jammy_xfce_aarch64.rar) |
@@ -149,9 +335,20 @@
 | `AIoT-3588A_6.6.0-kdev_armbian_trixie_gnome_aarch64.rar` | 966.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_trixie_gnome_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_trixie_mini_aarch64.rar` | 616.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_trixie_mini_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_armbian_trixie_xfce_aarch64.rar` | 1004.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_armbian_trixie_xfce_aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_centos_10_aarch64.rar` | 1.3 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_centos_10_aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_centos_8_aarch64.rar` | 1.4 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_centos_8_aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_centos_9_aarch64.rar` | 1.2 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_centos_9_aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_debian_bookworm_12_arm64.rar` | 337.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_debian_bookworm_12_arm64.rar) |
+| `AIoT-3588A_6.6.0-kdev_debian_bullseye_11_arm64.rar` | 256.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_debian_bullseye_11_arm64.rar) |
+| `AIoT-3588A_6.6.0-kdev_debian_trixie_13_arm64.rar` | 285.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_debian_trixie_13_arm64.rar) |
+| `AIoT-3588A_6.6.0-kdev_fnos_1.1.19_arm64.rar` | 1.6 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_fnos_1.1.19_arm64.rar) |
 | `AIoT-3588A_6.6.0-kdev_istoreos_24.10.1_arm64.rar` | 209.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_istoreos_24.10.1_arm64.rar) |
+| `AIoT-3588A_6.6.0-kdev_istoreos_24.10.2_arm64.rar` | 209.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_istoreos_24.10.2_arm64.rar) |
+| `AIoT-3588A_6.6.0-kdev_istoreos_24.10.3_arm64.rar` | 214.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_istoreos_24.10.3_arm64.rar) |
 | `AIoT-3588A_6.6.0-kdev_istoreos_24.10.4_arm64.rar` | 214.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_istoreos_24.10.4_arm64.rar) |
 | `AIoT-3588A_6.6.0-kdev_istoreos_24.10.5_arm64.rar` | 214.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_istoreos_24.10.5_arm64.rar) |
+| `AIoT-3588A_6.6.0-kdev_kali-linux-2025.3-cloud-genericcloud-arm64.rar` | 246.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_kali-linux-2025.3-cloud-genericcloud-arm64.rar) |
+| `AIoT-3588A_6.6.0-kdev_kali-linux-2025.4-cloud-genericcloud-arm64.rar` | 252.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_kali-linux-2025.4-cloud-genericcloud-arm64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-20.03-LTS-SP1.aarch64.rar` | 432.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-20.03-LTS-SP1.aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-20.03-LTS-SP2-aarch64.rar` | 419.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-20.03-LTS-SP2-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-20.03-LTS-SP3-aarch64.rar` | 429.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-20.03-LTS-SP3-aarch64.rar) |
@@ -161,37 +358,76 @@
 | `AIoT-3588A_6.6.0-kdev_openEuler-21.03-aarch64.rar` | 449.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-21.03-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-21.09-aarch64.rar` | 438.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-21.09-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-64kb-aarch64.rar` | 484.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-64kb-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-SP1-aarch64.rar` | 386.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-SP1-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-SP2-aarch64.rar` | 377.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-SP2-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-SP3-aarch64.rar` | 399.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-SP3-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-SP4-aarch64.rar` | 493.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-SP4-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-aarch64.rar` | 403.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-22.03-LTS-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-22.09-aarch64.rar` | 390.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-22.09-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-23.03-aarch64.rar` | 400.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-23.03-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_openEuler-23.09-aarch64.rar` | 405.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-23.09-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-24.03-LTS-SP1-aarch64.rar` | 485.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-24.03-LTS-SP1-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_openEuler-24.03-LTS-SP2-aarch64.rar` | 652.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-24.03-LTS-SP2-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-24.03-LTS-SP3-aarch64.rar` | 981.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-24.03-LTS-SP3-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-24.03-LTS-aarch64.rar` | 497.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-24.03-LTS-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-24.09-aarch64.rar` | 479.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-24.09-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-25.03-aarch64.rar` | 604.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-25.03-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openEuler-25.09-aarch64.rar` | 916.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openEuler-25.09-aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_opencloudos-v8.6-minimal-aarch64-20230206.rar` | 515.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_opencloudos-v8.6-minimal-aarch64-20230206.rar) |
+| `AIoT-3588A_6.6.0-kdev_opencloudos-v9.0-20230317-aarch64.rar` | 461.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_opencloudos-v9.0-20230317-aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openwrt_24.10.1_aarch64.rar` | 69.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openwrt_24.10.1_aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_openwrt_24.10.2_aarch64.rar` | 69.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openwrt_24.10.2_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openwrt_24.10.3_aarch64.rar` | 69.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openwrt_24.10.3_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openwrt_24.10.4_aarch64.rar` | 69.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openwrt_24.10.4_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_openwrt_24.10.5_aarch64.rar` | 69.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_openwrt_24.10.5_aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_rockylinux_10_aarch64.rar` | 279.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_rockylinux_10_aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_rockylinux_8_aarch64.rar` | 277.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_rockylinux_8_aarch64.rar) |
+| `AIoT-3588A_6.6.0-kdev_rockylinux_9_aarch64.rar` | 288.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_rockylinux_9_aarch64.rar) |
 | `AIoT-3588A_6.6.0-kdev_ubuntu_bionic_18.04_arm64.rar` | 291.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_ubuntu_bionic_18.04_arm64.rar) |
 | `AIoT-3588A_6.6.0-kdev_ubuntu_focal_20.04_arm64.rar` | 511.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_ubuntu_focal_20.04_arm64.rar) |
 | `AIoT-3588A_6.6.0-kdev_ubuntu_jammy_22.04_arm64.rar` | 545.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_ubuntu_jammy_22.04_arm64.rar) |
+| `AIoT-3588A_6.6.0-kdev_ubuntu_noble_24.04_arm64.rar` | 418.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/openeuler_olk-6.6/AIoT-3588A_6.6.0-kdev_ubuntu_noble_24.04_arm64.rar) |
 
 ## rockchip_develop-6.1
 
 - Tag: [`rockchip_develop-6.1`](https://github.com/yifengyou/aiot-3588a/releases/tag/rockchip_develop-6.1)
 - Published: 2026-10-20T09:49:58Z
-- Assets: 75
+- Assets: 118
 
 | 文件 | 大小 | 下载 |
 |---|---:|---|
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-23.0-aarch64.rar` | 554.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-23.0-aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_AnolisOS-23.1-aarch64.rar` | 483.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-23.1-aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-23.2-aarch64.rar` | 476.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-23.2-aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-23.3-aarch64.rar` | 538.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-23.3-aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-23.4-aarch64.rar` | 567.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-23.4-aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-7.9-GA-aarch64-ANCK.rar` | 537.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-7.9-GA-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-7.9-GA-aarch64-RHCK.rar` | 557.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-7.9-GA-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-8.10-aarch64-ANCK.rar` | 909.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.10-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-8.10-aarch64-RHCK.rar` | 907.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.10-aarch64-RHCK.rar) |
 | `AIoT-3588A_6.1.172-kdev_AnolisOS-8.2-GA-aarch64-ANCK.rar` | 414.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.2-GA-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-8.2-GA-aarch64-RHCK.rar` | 415.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.2-GA-aarch64-RHCK.rar) |
 | `AIoT-3588A_6.1.172-kdev_AnolisOS-8.4-aarch64-ANCK.rar` | 500.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.4-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-8.4-aarch64-RHCK.rar` | 520.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.4-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-8.6-aarch64-ANCK.rar` | 734.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.6-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-8.6-aarch64-RHCK.rar` | 774.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.6-aarch64-RHCK.rar) |
 | `AIoT-3588A_6.1.172-kdev_AnolisOS-8.8-aarch64-ANCK.rar` | 709.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.8-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-8.8-aarch64-RHCK.rar` | 759.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.8-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-8.9-aarch64-ANCK.rar` | 803.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.9-aarch64-ANCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_AnolisOS-8.9-aarch64-RHCK.rar` | 815.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_AnolisOS-8.9-aarch64-RHCK.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-33-1.2.aarch64.rar` | 246.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-33-1.2.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-34-1.2.aarch64.rar` | 237.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-34-1.2.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-35-1.2.aarch64.rar` | 293.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-35-1.2.aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-36-1.5.aarch64.rar` | 337.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-36-1.5.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-37-1.7.aarch64.rar` | 372.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-37-1.7.aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-38-1.6.aarch64.rar` | 372.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-38-1.6.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-39-1.5.aarch64.rar` | 416.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-39-1.5.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-Generic-41-1.4.aarch64.rar` | 416.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-Generic-41-1.4.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-Generic.aarch64-40-1.14.rar` | 375.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-Generic.aarch64-40-1.14.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-UEFI-UKI-41-1.4.aarch64.rar` | 353.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-UEFI-UKI-41-1.4.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-UEFI-UKI.aarch64-40-1.14.rar` | 319.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Cloud-Base-UEFI-UKI.aarch64-40-1.14.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Server-Guest-Generic-42-1.1.aarch64.rar` | 408.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Server-Guest-Generic-42-1.1.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_Fedora-Server-Guest-Generic-43-1.6.aarch64.rar` | 536.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_Fedora-Server-Guest-Generic-43-1.6.aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_OpenCloudOS-8.8-5.4.119-20.0009.29-20230817.1028-aarch64.rar` | 530.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-8.8-5.4.119-20.0009.29-20230817.1028-aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_OpenCloudOS-EC2-9.2-20250226.0.aarch64.rar` | 392.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-EC2-9.2-20250226.0.aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-8.10-20240729.0-20240730.1138-aarch64.rar` | 730.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-8.10-20240729.0-20240730.1138-aarch64.rar) |
@@ -199,8 +435,14 @@
 | `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20240711.0.aarch64.rar` | 669.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20240711.0.aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20240807.0.aarch64.rar` | 669.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20240807.0.aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20240919.0.aarch64.rar` | 668.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20240919.0.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20241030.0.aarch64.rar` | 668.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20241030.0.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20241211.0.aarch64.rar` | 387.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20241211.0.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20250226.0.aarch64.rar` | 395.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20250226.0.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20250327.0.aarch64.rar` | 388.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20250327.0.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20250421.0.aarch64.rar` | 394.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.2-20250421.0.aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.4-20250820.0.aarch64.rar` | 391.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.4-20250820.0.aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.4-20251120.0.aarch64.rar` | 509.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.4-20251120.0.aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.4-20251223.0.aarch64.rar` | 552.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_OpenCloudOS-GenericCloud-9.4-20251223.0.aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_armbian_bookworm_gnome_aarch64.rar` | 1.0 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_armbian_bookworm_gnome_aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_armbian_bookworm_mini_aarch64.rar` | 561.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_armbian_bookworm_mini_aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_armbian_bookworm_xfce_aarch64.rar` | 999.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_armbian_bookworm_xfce_aarch64.rar) |
@@ -220,14 +462,20 @@
 | `AIoT-3588A_6.1.172-kdev_armbian_trixie_gnome_aarch64.rar` | 964.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_armbian_trixie_gnome_aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_armbian_trixie_mini_aarch64.rar` | 615.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_armbian_trixie_mini_aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_armbian_trixie_xfce_aarch64.rar` | 1002.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_armbian_trixie_xfce_aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_centos_10_aarch64.rar` | 1.3 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_centos_10_aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_centos_8_aarch64.rar` | 1.4 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_centos_8_aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_centos_9_aarch64.rar` | 1.2 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_centos_9_aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_debian_bookworm_12_arm64.rar` | 336.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_debian_bookworm_12_arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_debian_bullseye_11_arm64.rar` | 254.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_debian_bullseye_11_arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_debian_trixie_13_arm64.rar` | 285.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_debian_trixie_13_arm64.rar) |
+| `AIoT-3588A_6.1.172-kdev_fnos_1.1.19_arm64.rar` | 1.6 GiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_fnos_1.1.19_arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_istoreos_24.10.1_arm64.rar` | 207.5 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_istoreos_24.10.1_arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_istoreos_24.10.2_arm64.rar` | 207.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_istoreos_24.10.2_arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_istoreos_24.10.3_arm64.rar` | 212.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_istoreos_24.10.3_arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_istoreos_24.10.4_arm64.rar` | 212.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_istoreos_24.10.4_arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_istoreos_24.10.5_arm64.rar` | 213.1 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_istoreos_24.10.5_arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_kali-linux-2025.3-cloud-genericcloud-arm64.rar` | 244.9 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_kali-linux-2025.3-cloud-genericcloud-arm64.rar) |
+| `AIoT-3588A_6.1.172-kdev_kali-linux-2025.4-cloud-genericcloud-arm64.rar` | 251.2 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_kali-linux-2025.4-cloud-genericcloud-arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_openEuler-20.03-LTS-SP1.aarch64.rar` | 433.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openEuler-20.03-LTS-SP1.aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_openEuler-20.03-LTS-SP2-aarch64.rar` | 417.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openEuler-20.03-LTS-SP2-aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_openEuler-20.03-LTS-SP3-aarch64.rar` | 432.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openEuler-20.03-LTS-SP3-aarch64.rar) |
@@ -252,11 +500,16 @@
 | `AIoT-3588A_6.1.172-kdev_openEuler-24.09-aarch64.rar` | 503.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openEuler-24.09-aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_openEuler-25.03-aarch64.rar` | 603.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openEuler-25.03-aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_openEuler-25.09-aarch64.rar` | 917.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openEuler-25.09-aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_opencloudos-v8.6-minimal-aarch64-20230206.rar` | 513.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_opencloudos-v8.6-minimal-aarch64-20230206.rar) |
+| `AIoT-3588A_6.1.172-kdev_opencloudos-v9.0-20230317-aarch64.rar` | 465.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_opencloudos-v9.0-20230317-aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_openwrt_24.10.1_aarch64.rar` | 68.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openwrt_24.10.1_aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_openwrt_24.10.2_aarch64.rar` | 68.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openwrt_24.10.2_aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_openwrt_24.10.3_aarch64.rar` | 68.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openwrt_24.10.3_aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_openwrt_24.10.4_aarch64.rar` | 68.4 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openwrt_24.10.4_aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_openwrt_24.10.5_aarch64.rar` | 68.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_openwrt_24.10.5_aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_rockylinux_10_aarch64.rar` | 278.0 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_rockylinux_10_aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_rockylinux_8_aarch64.rar` | 275.7 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_rockylinux_8_aarch64.rar) |
+| `AIoT-3588A_6.1.172-kdev_rockylinux_9_aarch64.rar` | 299.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_rockylinux_9_aarch64.rar) |
 | `AIoT-3588A_6.1.172-kdev_ubuntu_bionic_18.04_arm64.rar` | 290.3 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_ubuntu_bionic_18.04_arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_ubuntu_focal_20.04_arm64.rar` | 509.6 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_ubuntu_focal_20.04_arm64.rar) |
 | `AIoT-3588A_6.1.172-kdev_ubuntu_jammy_22.04_arm64.rar` | 546.8 MiB | [下载](https://github.com/yifengyou/aiot-3588a/releases/download/rockchip_develop-6.1/AIoT-3588A_6.1.172-kdev_ubuntu_jammy_22.04_arm64.rar) |
