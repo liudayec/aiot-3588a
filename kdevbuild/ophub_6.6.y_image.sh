@@ -160,6 +160,8 @@ du -sh kernel-headers
 # 更新rootfs
 # ============================================================
 mount "${WORKDIR}/rockdev/rootfs.img" /mnt
+# ---- 补丁：修正 rootfs 的 fstab（LABEL=kdevboot + x-systemd.growfs）----
+bash "$(cd "$(dirname "$0")" && pwd)/fix_rootfs_fstab.sh" /mnt || true
 # update rootfs with kernel modules
 if [ -d kos/lib/modules ]; then
   REQ=$(du -sk kos/lib/modules | awk '{print $1}')
@@ -256,13 +258,13 @@ label normal
 	menu label Linux kernel ${KERNEL_RELEASE}-kdev
 	linux vmlinuz-${KERNEL_RELEASE}
 	fdt /dtb/${DTB_NAME}
-	append root=PARTUUID=${ROOT_PARTUUID} panic=9 rw console=ttyS2,1500000 console=tty1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory net.ifnames=0 biosdevname=0 level=10 loglevel=10 selinux=0 crashkernel=384M-:128M systemd.mask=systemd-growfs@-.service rockchip.dmc_freq=528000 video=HDMI-A-1:1920x1080@60
+	append root=PARTUUID=${ROOT_PARTUUID} panic=9 rw console=ttyS2,1500000 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory net.ifnames=0 biosdevname=0 level=10 loglevel=10 selinux=0 crashkernel=384M-:128M rockchip.dmc_freq=528000 video=HDMI-A-1:1920x1080@60
 
 label single
 	menu label Linux kernel ${KERNEL_RELEASE}-kdev (rescue target)
 	linux vmlinuz-${KERNEL_RELEASE}
 	fdt /dtb/${DTB_NAME}
-	append root=PARTUUID=${ROOT_PARTUUID} panic=9 rw console=ttyS2,1500000 console=tty1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory net.ifnames=0 biosdevname=0 level=10 loglevel=10 selinux=0 crashkernel=384M-:128M single
+	append root=PARTUUID=${ROOT_PARTUUID} panic=9 rw console=ttyS2,1500000 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory net.ifnames=0 biosdevname=0 level=10 loglevel=10 selinux=0 crashkernel=384M-:128M single
 
 EOF
 
