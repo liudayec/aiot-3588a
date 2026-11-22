@@ -9,7 +9,7 @@ DTB_NAME="rk3588-aiot-3588a.dtb"
 BUILD_TAG="${BOARD_NAME}_${KERNEL_RELEASE}_${set_rootfs}"
 SPL_LOADER="rk3588_spl_loader_v1.21.114.bin"
 UBOOT_URL="https://github.com/yifengyou/rockchip-uboot-mainline/releases/download/aiot-3588a-uboot"
-KERNEL_URL="https://github.com/yifengyou/rockchip-ophub-linux-6.6.y/releases/download/aiot-3588a_ophub-6.6.y"
+KERNEL_URL="https://github.com/liudayec/rockchip-ophub-linux-6.6.y/releases/download/aiot-3588a_ophub-6.6.y-md"
 RECOVERY_URL="https://github.com/yifengyou/rockchip-ophub-linux-6.18.y/releases/download/aiot-3588a-recovery"
 ROOTFS_BASE_URL="https://github.com/yifengyou/kdev/releases/download"
 
@@ -157,10 +157,10 @@ tar -xf kernel-headers-${KERNEL_RELEASE}.tar.gz
 du -sh kernel-headers
 
 # ============================================================
-# 更新rootfs
+# 鏇存柊rootfs
 # ============================================================
 mount "${WORKDIR}/rockdev/rootfs.img" /mnt
-# ---- 补丁：修正 rootfs 的 fstab（LABEL=kdevboot + x-systemd.growfs）----
+# ---- 琛ヤ竵锛氫慨姝?rootfs 鐨?fstab锛圠ABEL=kdevboot + x-systemd.growfs锛?---
 bash "$(cd "$(dirname "$0")" && pwd)/fix_rootfs_fstab.sh" /mnt || true
 # update rootfs with kernel modules
 if [ -d kos/lib/modules ]; then
@@ -194,7 +194,7 @@ if [ -d ${WORKDIR}/firmware ]; then
 fi
 
 # update kernel-devel (without /lib/modules/xxx/build soft link creatation)
-# /usr/src/kernels/<version>/ 或 /lib/modules/<version>/build/
+# /usr/src/kernels/<version>/ 鎴?/lib/modules/<version>/build/
 if [ -d kernel-devel ]; then
   REQ=$(du -sk kernel-devel | awk '{print $1}')
   AVAIL=$(df -k /mnt | tail -1 | awk '{print $4}')
@@ -228,7 +228,7 @@ fi
 umount -l /mnt
 
 # ============================================================
-# 生成boot.img
+# 鐢熸垚boot.img
 # ============================================================
 dd if=/dev/zero of=boot.img bs=1M count=256
 mkfs.ext2 -U 7A3F0000-0000-446A-8000-702F00006273 -L kdevboot boot.img
