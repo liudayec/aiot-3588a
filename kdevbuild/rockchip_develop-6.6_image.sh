@@ -9,7 +9,7 @@ DTB_NAME="rk3588-aiot-3588a.dtb"
 BUILD_TAG="${BOARD_NAME}_${KERNEL_RELEASE}_${set_rootfs}"
 SPL_LOADER="rk3588_spl_loader_v1.21.114.bin"
 UBOOT_URL="https://github.com/yifengyou/rockchip-uboot-mainline/releases/download/aiot-3588a-uboot"
-KERNEL_URL="https://github.com/yifengyou/rockchip-kernel/releases/download/aiot-3588a_develop-6.6"
+KERNEL_URL="https://github.com/liudayec/rockchip-kernel/releases/download/aiot-3588a_develop-6.6-md"
 RECOVERY_URL="https://github.com/yifengyou/rockchip-ophub-linux-6.18.y/releases/download/aiot-3588a-recovery"
 ROOTFS_BASE_URL="https://github.com/yifengyou/kdev/releases/download"
 
@@ -160,6 +160,9 @@ du -sh kernel-headers
 # 更新rootfs
 # ============================================================
 mount "${WORKDIR}/rockdev/rootfs.img" /mnt
+
+# 修复 rootfs 的 fstab + 预建 /vol1 + 安装扩容服务
+bash "$(cd "$(dirname "$0")" && pwd)/fix_rootfs_fstab.sh" /mnt || true
 # update rootfs with kernel modules
 if [ -d kos/lib/modules ]; then
   REQ=$(du -sk kos/lib/modules | awk '{print $1}')
@@ -256,13 +259,13 @@ label normal
 	menu label Linux kernel ${KERNEL_RELEASE}-kdev
 	linux vmlinuz-${KERNEL_RELEASE}
 	fdt /dtb/${DTB_NAME}
-	append root=PARTUUID=${ROOT_PARTUUID} panic=9 rw console=ttyS2,1500000 console=tty1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory net.ifnames=0 biosdevname=0 level=10 loglevel=10 selinux=0 crashkernel=384M-:128M systemd.mask=systemd-growfs@-.service rockchip.dmc_freq=528000 video=HDMI-A-1:1920x1080@60
+	append root=PARTUUID=${ROOT_PARTUUID} panic=9 rw console=ttyS2,1500000 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory net.ifnames=0 biosdevname=0 level=10 loglevel=10 selinux=0 crashkernel=384M-:128M rockchip.dmc_freq=528000 video=HDMI-A-1:1920x1080@60
 
 label single
 	menu label Linux kernel ${KERNEL_RELEASE}-kdev (rescue target)
 	linux vmlinuz-${KERNEL_RELEASE}
 	fdt /dtb/${DTB_NAME}
-	append root=PARTUUID=${ROOT_PARTUUID} panic=9 rw console=ttyS2,1500000 console=tty1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory net.ifnames=0 biosdevname=0 level=10 loglevel=10 selinux=0 crashkernel=384M-:128M single
+	append root=PARTUUID=${ROOT_PARTUUID} panic=9 rw console=ttyS2,1500000 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory net.ifnames=0 biosdevname=0 level=10 loglevel=10 selinux=0 crashkernel=384M-:128M single
 
 EOF
 

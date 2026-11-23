@@ -58,3 +58,37 @@ echo "--- 修改后 ---"
 cat "$F"
 echo "（原文件备份在 ${F}.orig）"
 echo "=========================================================="
+
+# ============================================================
+# 追加：预建 /vol1 + 安装 btrfs 根分区自动扩容服务
+# ============================================================
+# 5) 预建 /vol1：fnOS 存储池挂载点
+#    不建的话，创建存储空间会在 mount 阶段失败，
+#    并在 fnOS 的 mount 表里留下残留记录，导致之后每次重试都撞主键冲突
+mkdir -p "$MNT/vol1" 2>/dev/null || true
+chmod 755 "$MNT/vol1" 2>/dev/null || true
+echo "[fix_rootfs] 已预建 /vol1"
+
+# 6) 安装 btrfs 根分区自动扩容服务
+#    systemd-growfs@-.service 在 root=PARTUUID 启动时会报 pseudo-device /dev/root 失败
+mkdir -p "$MNT/etc/systemd/system/sysinit.target.wants" 2>/dev/null || true
+cat > "$MNT/etc/systemd/system/btrfs-growroot.service" <<'SVCEOF'
+[Unit]
+Description=Grow btrfs root filesystem to fill its partition
+DefaultDependencies=no
+After=local-fs.target
+Before=sysinit.target shutdown.target
+ConditionPathIsMountPoint=/
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c 'exec 1>/dev/console 2>&1; btrfs filesystem resize max / || true'
+
+[Install]
+WantedBy=sysinit.target
+SVCEOF
+ln -sf ../btrfs-growroot.service "$MNT/etc/systemd/system/sysinit.target.wants/btrfs-growroot.service" 2>/dev/null || true
+echo "[fix_rootfs] 已安装 btrfs-growroot.service"
+
+exit 0
