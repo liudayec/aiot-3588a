@@ -1,0 +1,8 @@
+# bcmdhd config for AP6256 (BCM43455) on AIoT-3588A
+dhd_sdiod_drive_strength=6
+sd_oobonly=1
+dhd_txglom=0
+dhd_doflow=0
+dhd_dpcpoll=1
+dhd_sdiod_ib_ths=0
+dhd_sdiod_ib_to=0

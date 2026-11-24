@@ -162,7 +162,8 @@ if [ -d "$FW_SRC" ]; then
   for pair in \
       "fw_bcmdhd.bin:fw_bcm43456c5_ag.bin" \
       "clm_blob.bin:fw_bcm43456c5_ag.clm_blob" \
-      "nvram.txt:nvram_ap6256.txt"
+      "nvram.txt:nvram_ap6256.txt" \
+      "config.txt:config.txt"
   do
     src="${pair%%:*}"
     dst="${pair##*:}"
