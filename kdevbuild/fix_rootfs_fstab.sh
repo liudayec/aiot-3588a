@@ -129,4 +129,21 @@ ln -sf ../trim-vol1-heal.service "$MNT/etc/systemd/system/local-fs.target.wants/
 echo "[fix_rootfs] 已安装 trim-vol1-heal.service"
 
 
+
+# 8) 安装 WiFi 固件（bcmdhd 驱动从 /vendor/etc/firmware/ 读，缺了 WiFi 就起不来）
+FW_SRC="$(cd "$(dirname "$0")" && pwd)/firmware"
+if [ -d "$FW_SRC" ]; then
+  mkdir -p "$MNT/vendor/etc/firmware"
+  for f in fw_bcmdhd.bin nvram.txt; do
+    if [ -f "$FW_SRC/$f" ]; then
+      cp -f "$FW_SRC/$f" "$MNT/vendor/etc/firmware/$f"
+      echo "[fix_rootfs] 已安装 $f"
+    fi
+  done
+  chmod 644 "$MNT/vendor/etc/firmware/"* 2>/dev/null || true
+else
+  echo "[fix_rootfs] 警告: 找不到 $FW_SRC，跳过 WiFi 固件"
+fi
+
+
 exit 0
