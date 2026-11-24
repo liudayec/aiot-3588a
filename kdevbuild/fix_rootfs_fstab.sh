@@ -94,4 +94,39 @@ SVCEOF
 ln -sf ../btrfs-growroot.service "$MNT/etc/systemd/system/sysinit.target.wants/btrfs-growroot.service" 2>/dev/null || true
 echo "[fix_rootfs] 已安装 btrfs-growroot.service"
 
+
+# 7) 安装 /vol1 自愈服务
+#    fnOS 某些情况下会清掉 /vol1，之后创建存储池就报 mount 失败(exit 32)。
+#    这个服务在每次开机时：① 确保 /vol1 目录存在 ② 存储池没挂上就挂上
+cat > "$MNT/etc/systemd/system/trim-vol1-heal.service" <<'HEALEOF'
+[Unit]
+Description=Ensure /vol1 exists and storage pool is mounted
+DefaultDependencies=no
+After=local-fs.target
+Before=trim_main.service trim_trashbind.service
+ConditionPathIsReadWrite=/
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c '\
+  mkdir -p /vol1 || true; \
+  chmod 755 /vol1 || true; \
+  if ! mountpoint -q /vol1; then \
+    for lv in /dev/mapper/trim_*-0; do \
+      if [ -e "$lv" ] && blkid "$lv" >/dev/null 2>&1; then \
+        mount "$lv" /vol1 2>/dev/null && break; \
+      fi; \
+    done; \
+  fi; \
+  exit 0'
+
+[Install]
+WantedBy=local-fs.target
+HEALEOF
+mkdir -p "$MNT/etc/systemd/system/local-fs.target.wants" 2>/dev/null || true
+ln -sf ../trim-vol1-heal.service "$MNT/etc/systemd/system/local-fs.target.wants/trim-vol1-heal.service" 2>/dev/null || true
+echo "[fix_rootfs] 已安装 trim-vol1-heal.service"
+
+
 exit 0
