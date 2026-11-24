@@ -237,6 +237,17 @@ mount boot.img /mnt
 
 mkdir -p /mnt/dtb
 cp -a ${DTB_NAME} /mnt/dtb/
+
+# 用固件仓库里预置的修复版 DTB 覆盖（含 WiFi/蓝牙/4G 引脚修复）
+# 原因：内核编译的 Upload to Release 会用编译产物覆盖 release 里的 DTB，
+#      导致每次编译后 DTB 又变回未修复的原版。
+LOCAL_DTB="$(cd "$(dirname "$0")" && pwd)/dtb/${DTB_NAME}"
+if [ -f "$LOCAL_DTB" ]; then
+    cp -f "$LOCAL_DTB" /mnt/dtb/${DTB_NAME}
+    echo "[dtb] 已用固件仓库的修复版 DTB 覆盖: $(stat -c%s /mnt/dtb/${DTB_NAME}) 字节"
+else
+    echo "[dtb] 警告: $LOCAL_DTB 不存在，使用内核 release 的 DTB"
+fi
 cp -f Image-${KERNEL_RELEASE} /mnt/vmlinuz-${KERNEL_RELEASE}
 cp -f config-${KERNEL_RELEASE} /mnt/config-${KERNEL_RELEASE}
 cp -f System.map-${KERNEL_RELEASE} /mnt/System.map-${KERNEL_RELEASE}
