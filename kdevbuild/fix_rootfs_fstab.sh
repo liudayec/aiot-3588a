@@ -140,7 +140,7 @@ fi
 # 9) 安装 4G 模块电源服务
 #    板子 EC200A-CN（Mini-PCIe）的电源/复位/使能挂在 NCA9555(pca9555) 上：
 #      pin 5 = 4g_power    (高 = 上电)
-#      pin 3 = 4g_reset    (高 = 不复位)
+#      pin 3 = 4g_reset    (GPIO_ACTIVE_LOW！逻辑高=物理低，物理低=不复位)
 #      pin 8 = 4g_disable  (高 = 不禁用)
 #      pin 1 = usb2_power  (高 = USB2 供电)
 #    Android 用 smdt,smdtio 驱动初始化这些脚，Linux 侧没有，必须自己设。
@@ -153,7 +153,7 @@ ConditionPathExists=/sys/class/gpio
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/bash -c 'for spec in 515:1 517:1 513:1 520:1; do g=${spec%%:*}; v=${spec##*:}; if [ ! -d /sys/class/gpio/gpio$g ]; then echo $g > /sys/class/gpio/export 2>/dev/null; sleep 0.1; fi; if [ -d /sys/class/gpio/gpio$g ]; then echo out > /sys/class/gpio/gpio$g/direction 2>/dev/null; echo $v > /sys/class/gpio/gpio$g/value 2>/dev/null; fi; done; exit 0'
+ExecStart=/bin/bash -c 'for g in 513 515 517 519 520; do if [ ! -d /sys/class/gpio/gpio$g ]; then echo $g > /sys/class/gpio/export 2>/dev/null; sleep 0.1; fi; if [ -d /sys/class/gpio/gpio$g ]; then echo out > /sys/class/gpio/gpio$g/direction 2>/dev/null; fi; done; echo 1 > /sys/class/gpio/gpio513/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio517/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio519/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio520/value 2>/dev/null; sleep 0.2; echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; sleep 0.3; echo 1 > /sys/class/gpio/gpio515/value 2>/dev/null; sleep 0.2; echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; exit 0'
 
 [Install]
 WantedBy=multi-user.target

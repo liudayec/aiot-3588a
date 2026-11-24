@@ -7050,11 +7050,11 @@
 			status = "okay";
 			phandle = <0x1ac>;
 
-			4g-reset-hog {
+			4g-disable-hog {
 				gpio-hog;
-				gpios = <0x1ac 0x03 0x00>;
+				gpios = <0x1ac 0x08 0x00>;
 				output-high;
-				line-name = "4g_reset";
+				line-name = "4g_disable";
 			};
 
 			4g-power-hog {
@@ -7062,6 +7062,34 @@
 				gpios = <0x1ac 0x05 0x00>;
 				output-high;
 				line-name = "4g_power";
+			};
+
+			4g-reset-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x03 0x00>;
+				output-low;
+				line-name = "4g_reset";
+			};
+
+			usb2-power-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x01 0x00>;
+				output-high;
+				line-name = "usb2_power";
+			};
+
+			usb1-power-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x07 0x00>;
+				output-high;
+				line-name = "usb1_power";
+			};
+
+			usb0-power-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x00 0x00>;
+				output-high;
+				line-name = "usb0_power";
 			};
 		};
 
@@ -9322,13 +9350,6 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led-0 {
-			gpios = <0x1ac 0x08 0x00>;
-			label = "sys";
-			linux,default-trigger = "heartbeat";
-			default-state = "on";
-		};
-
 		led-1 {
 			gpios = <0x1ac 0x07 0x00>;
 			label = "pwr";
@@ -9484,6 +9505,7 @@
 		compatible = "mmc-pwrseq-simple";
 		pinctrl-names = "default";
 		pinctrl-0 = <0x601>;
+		reset-gpios = <0x157 0x14 0x01>;
 		clocks = <0x1cb>;
 		clock-names = "ext_clock";
 		post-power-on-delay-ms = <0xc8>;
@@ -9496,17 +9518,8 @@
 		pinctrl-0 = <0x602>;
 		wifi_chip_type = "ap6398s";
 		WIFI,host_wake_irq = <0x157 0x0a 0x00>;
-		gpio_wl_reg_on = <0x157 0x14 0x00>;
-		gpio_wl_host_wake = <0x157 0x0a 0x00>;
 		WIFI,poweren-gpios = <0x157 0x14 0x00>;
 		WIFI,poweren_gpio = <0x157 0x14 0x00>;
-		status = "okay";
-	};
-
-	bcmdhd-wlan {
-		compatible = "bcmdhd_wlan";
-		gpio_wl_reg_on = <0x157 0x14 0x00>;
-		gpio_wl_host_wake = <0x157 0x0a 0x00>;
 		status = "okay";
 	};
 
