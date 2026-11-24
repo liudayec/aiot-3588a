@@ -186,5 +186,38 @@ fi
 # ==========================================================================
 mkdir -p "$MNT/etc/mobile-broadband" 2>/dev/null || true
 
+
+# ==========================================================================
+# ⑪ trim-wifi-guard.service —— WiFi 兜底
+#
+# 问题：如果 WiFi 芯片打不开（WL_REG_ON 无效 / 固件不匹配），
+#       bcmdhd 每次被探测都会卡 12 秒重试，导致 fnOS 网络设置转圈、
+#       sshd 响应不过来。
+#
+# 兜底：开机 60 秒后检查 wlan0 是否真的 UP。
+#       起不来就自动加黑名单 + 卸载模块，让系统不再等它。
+#       WiFi 正常时这个服务不做任何事。
+# ==========================================================================
+cat > "$MNT/etc/systemd/system/trim-wifi-guard.service" <<'WGEOF'
+[Unit]
+Description=WiFi guard: disable bcmdhd if wlan0 cannot come up
+After=local-fs.target trim_main.service network_service.service
+Wants=trim_main.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# 给 WiFi 60 秒尝试时间
+ExecStartPre=/bin/sleep 60
+ExecStart=/bin/bash -c 'if [ -d /sys/class/net/wlan0 ]; then st=$(cat /sys/class/net/wlan0/operstate 2>/dev/null); if [ "$st" = "up" ]; then echo "[wifi-guard] wlan0 正常 (up)，不干预"; else echo "[wifi-guard] wlan0 状态=$st，判定 WiFi 不可用，自动屏蔽 bcmdhd"; printf "install bcmdhd /bin/false\nblacklist bcmdhd\n" > /etc/modprobe.d/blacklist-bcmdhd.conf; ip link set wlan0 down 2>/dev/null; /sbin/rmmod bcmdhd 2>/dev/null; fi; else echo "[wifi-guard] 无 wlan0 设备，不干预"; fi; exit 0'
+
+[Install]
+WantedBy=multi-user.target
+WGEOF
+ln -sf ../trim-wifi-guard.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-wifi-guard.service" 2>/dev/null || true
+echo "[fix_rootfs] 已安装 trim-wifi-guard.service（WiFi 兜底）"
+
+
 echo "[fix_rootfs] 全部完成"
 exit 0
