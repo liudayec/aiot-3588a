@@ -86,29 +86,7 @@ ConditionPathIsMountPoint=/
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/bash -c 'exec 1>/dev/console 2>&1; btrfs filesystem resize max / || true'
-
-[Install]
-WantedBy=sysinit.target
-SVCEOF
-ln -sf ../btrfs-growroot.service "$MNT/etc/systemd/system/sysinit.target.wants/btrfs-growroot.service" 2>/dev/null || true
-echo "[fix_rootfs] 已安装 btrfs-growroot.service"
-
-
-# 7) 安装 /vol1 自愈服务
-#    fnOS 某些情况下会清掉 /vol1，之后创建存储池就报 mount 失败(exit 32)。
-#    这个服务在每次开机时：① 确保 /vol1 目录存在 ② 存储池没挂上就挂上
-cat > "$MNT/etc/systemd/system/trim-vol1-heal.service" <<'HEALEOF'
-[Unit]
-Description=Ensure /vol1 exists and storage pool is mounted
-After=local-fs.target trim_main.service
-Wants=trim_main.service
-ConditionPathIsReadWrite=/
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/bin/bash -c 'mkdir -p /vol1; chmod 755 /vol1; if ! mountpoint -q /vol1; then for lv in /dev/mapper/trim_*-0; do if [ -e "$lv" ] && blkid "$lv" >/dev/null 2>&1; then mount "$lv" /vol1 2>/dev/null && break; fi; done; fi; exit 0'
+ExecStart=/bin/bash -c 'for g in 513 515 517 519 520; do if [ ! -d /sys/class/gpio/gpio$g ]; then echo $g > /sys/class/gpio/export 2>/dev/null; sleep 0.1; fi; if [ -d /sys/class/gpio/gpio$g ]; then echo out > /sys/class/gpio/gpio$g/direction 2>/dev/null; fi; done; echo 0 > /sys/class/gpio/gpio517/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio515/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio520/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio513/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio519/value 2>/dev/null; sleep 1.5; echo 1 > /sys/class/gpio/gpio517/value 2>/dev/null; sleep 1.0; echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; exit 0'
 
 [Install]
 WantedBy=multi-user.target
@@ -153,7 +131,11 @@ ConditionPathExists=/sys/class/gpio
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/bash -c 'for g in 513 515 517 519 520; do if [ ! -d /sys/class/gpio/gpio$g ]; then echo $g > /sys/class/gpio/export 2>/dev/null; sleep 0.1; fi; if [ -d /sys/class/gpio/gpio$g ]; then echo out > /sys/class/gpio/gpio$g/direction 2>/dev/null; fi; done; echo 1 > /sys/class/gpio/gpio513/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio517/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio519/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio520/value 2>/dev/null; sleep 0.2; echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; sleep 0.3; echo 1 > /sys/class/gpio/gpio515/value 2>/dev/null; sleep 0.2; echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; exit 0'
+ExecStart=/bin/bash -c '# 1) 导出并设为输出
+for g in 513 515 517 519 520; do if [ ! -d /sys/class/gpio/gpio$g ]; then echo $g > /sys/class/gpio/export 2>/dev/null; sleep 0.1; fi; if [ -d /sys/class/gpio/gpio$g ]; then echo out > /sys/class/gpio/gpio$g/direction 2>/dev/null; fi; done; # 2) 4G 断电：power=0, reset 有效(物理高, ACTIVE_LOW), disable=高
+echo 0 > /sys/class/gpio/gpio517/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio515/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio520/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio513/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio519/value 2>/dev/null; sleep 1.5; # 3) 4G 上电
+echo 1 > /sys/class/gpio/gpio517/value 2>/dev/null; sleep 1.0; # 4) 释放复位（ACTIVE_LOW → 物理低）
+echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; exit 0'
 
 [Install]
 WantedBy=multi-user.target
