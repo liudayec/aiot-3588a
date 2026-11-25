@@ -275,14 +275,17 @@ echo "[fix_rootfs] 已 mask ModemManager（让 usb0 归 NetworkManager）"
 # --- ④ 4G usb0 静态 IP 服务（EC200A ECM 模式没有 DHCP）---
 cat > "$MNT/etc/systemd/system/trim-4g-ip.service" <<'G4IPEOF'
 [Unit]
-Description=Configure 4G usb0 static IP (EC200A ECM has no DHCP server)
-After=NetworkManager.service trim-4g-power.service
-Wants=NetworkManager.service trim-4g-power.service
+Description=Bring up 4G usb0 via DHCP after QNETDEVCTL binding
+After=NetworkManager.service trim-4g-apn.service
+Wants=NetworkManager.service trim-4g-apn.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/bash -c 'for i in $(seq 1 30); do if [ -d /sys/class/net/usb0 ]; then /usr/bin/nmcli con up "4G-USB0" 2>/dev/null && exit 0; fi; sleep 2; done; if [ -d /sys/class/net/usb0 ]; then ip addr add 192.168.225.2/24 dev usb0 2>/dev/null; ip link set usb0 up; ip route replace default via 192.168.225.1 dev usb0 metric 700 2>/dev/null; fi; exit 0'
+# 顺序很重要：
+#   trim-4g-apn 先跑完 AT+QNETDEVCTL=1,1,1（把 PDP 绑到 usb0）
+#   然后这里再拉一次 NM 连接，让 DHCP 去要运营商 IP
+ExecStart=/bin/bash -c 'i=0; while [ $i -lt 40 ]; do if ip -4 addr show usb0 2>/dev/null | grep -q "inet "; then exit 0; fi; if [ -d /sys/class/net/usb0 ]; then /usr/bin/nmcli con up "4G-USB0" 2>/dev/null; fi; sleep 4; i=$((i+1)); done; exit 0'
 
 [Install]
 WantedBy=multi-user.target
@@ -301,16 +304,21 @@ type=ethernet
 interface-name=usb0
 autoconnect=true
 autoconnect-priority=10
+# 每次连上都要等 QNETDEVCTL 绑定完成后再 DHCP
+autoconnect-retries=0
 
 [ethernet]
 cloned-mac-address=permanent
 
 [ipv4]
-method=manual
-address1=192.168.225.2/24,192.168.225.1
-dns=114.114.114.114;223.5.5.5;
-dns-search=
-may-fail=false
+# ★ 关键：必须是 auto（DHCP）
+# 板子实测：AT+QNETDEVCTL=1,1,1 绑定成功后，模块会通过 DHCP 直接下发
+# 运营商 IP（例如 10.20.79.77/8，网关 10.20.79.178），3 秒内拿到。
+# 写成 manual 反而会盖掉运营商 IP，只能拿 192.168.225.2 这个内网地址，
+# 虽然能 ping 通但出口 IP 不对，且重启后 QNETDEVCTL 丢失就没网了。
+method=auto
+may-fail=true
+dhcp-timeout=90
 
 [ipv6]
 method=ignore
