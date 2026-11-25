@@ -61,9 +61,6 @@ echo "（原文件备份在 ${F}.orig）"
 # ==========================================================================
 # ⑤ 预建 /vol1
 # ==========================================================================
-mkdir -p "$MNT/vol1" 2>/dev/null || true
-chmod 755 "$MNT/vol1" 2>/dev/null || true
-echo "[fix_rootfs] 已预建 /vol1"
 
 # ==========================================================================
 # ⑥ btrfs-growroot.service —— 替代失效的 systemd-growfs@-.service
@@ -93,24 +90,6 @@ echo "[fix_rootfs] 已安装 btrfs-growroot.service"
 #    时序：After=trim_main（在 fnOS 启动之后再执行，否则 /vol1 会被它清掉）
 # ==========================================================================
 mkdir -p "$MNT/etc/systemd/system/multi-user.target.wants" 2>/dev/null || true
-cat > "$MNT/etc/systemd/system/trim-vol1-heal.service" <<'HEALEOF'
-[Unit]
-Description=Ensure /vol1 exists and storage pool is mounted
-After=local-fs.target trim_main.service
-Wants=trim_main.service
-ConditionPathIsReadWrite=/
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/bin/bash -c 'mkdir -p /vol1; chmod 755 /vol1; vgchange -ay >/dev/null 2>&1; if ! mountpoint -q /vol1; then for lv in /dev/mapper/trim_*-0; do if [ -e "$lv" ] && blkid "$lv" >/dev/null 2>&1; then mount "$lv" /vol1 2>/dev/null && break; fi; done; fi; exit 0'
-
-[Install]
-WantedBy=multi-user.target
-HEALEOF
-ln -sf ../trim-vol1-heal.service \
-  "$MNT/etc/systemd/system/multi-user.target.wants/trim-vol1-heal.service" 2>/dev/null || true
-echo "[fix_rootfs] 已安装 trim-vol1-heal.service"
 
 # ==========================================================================
 # ⑧ trim-4g-power.service —— 4G 模块电源/复位时序
