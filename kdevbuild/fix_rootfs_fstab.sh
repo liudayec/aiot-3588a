@@ -488,7 +488,7 @@ echo "[fix_rootfs] 已装 trim-4g-apn.service（APN=ctlte）"
 # ==========================================================================
 cat > "$MNT/etc/systemd/system/trim-db-init.service" <<'DBINITEOF'
 [Unit]
-Description=Re-run triminit after PostgreSQL is actually ready (creates missing tables)
+Description=Re-run triminit after PostgreSQL is ready (creates missing fnOS tables)
 After=postgresql.service postgresql@15-main.service trim_init.service
 Wants=postgresql.service
 ConditionPathExists=/usr/trim/bin/triminit
@@ -496,15 +496,132 @@ ConditionPathExists=/usr/trim/bin/triminit
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-# 最多等 90 秒，直到 pg_isready 成功且能查到 trim 库
-ExecStart=/bin/bash -c 'i=0; while [ $i -lt 45 ]; do if /usr/bin/pg_isready -q -h /var/run/postgresql 2>/dev/null; then break; fi; sleep 2; i=$((i+1)); done; sleep 3; /usr/trim/bin/triminit 2>&1 | /usr/bin/logger -t trim-db-init || true; sleep 2; su - postgres -c "psql -d appcenter -tAc \"select count(*) from information_schema.tables where table_name=$$common_config$$\" > /dev/null" 2>/dev/null || /usr/trim/bin/triminit 2>&1 | /usr/bin/logger -t trim-db-init || true; exit 0'
+# 2026-11-25 修复：上一版把 psql 的 SQL 用 $$ 括起来，systemd 会把它当变量展开，
+# 导致 /bin/bash: syntax error near unexpected token `('
+# 改成用独立脚本，避开 systemd 的引号解析
+ExecStart=/usr/local/sbin/trim-db-init.sh
+TimeoutStartSec=180
 
 [Install]
 WantedBy=multi-user.target
 DBINITEOF
 ln -sf ../trim-db-init.service \
   "$MNT/etc/systemd/system/multi-user.target.wants/trim-db-init.service" 2>/dev/null || true
+
+cat > "$MNT/usr/local/sbin/trim-db-init.sh" <<'DBINITSH'
+#!/bin/bash
+# 等 PostgreSQL 就绪后重跑 triminit，补建 fnOS 缺失的表
+i=0
+while [ $i -lt 60 ]; do
+  if pg_isready -q -h /var/run/postgresql 2>/dev/null; then
+    break
+  fi
+  sleep 2
+  i=$((i+1))
+done
+
+sleep 5
+
+# 检查 common_config 表是否存在，不存在就重跑 triminit
+EXIST=$(su - postgres -c "psql -d appcenter -tAc \"SELECT count(*) FROM information_schema.tables WHERE table_name='common_config'\"" 2>/dev/null | tr -d ' \n')
+
+if [ "$EXIST" != "1" ]; then
+  echo "[trim-db-init] common_config missing, re-running triminit"
+  /usr/trim/bin/triminit 2>&1
+  sleep 3
+  EXIST=$(su - postgres -c "psql -d appcenter -tAc \"SELECT count(*) FROM information_schema.tables WHERE table_name='common_config'\"" 2>/dev/null | tr -d ' \n')
+fi
+
+echo "[trim-db-init] common_config exists: ${EXIST:-0}"
+exit 0
+DBINITSH
+chmod 755 "$MNT/usr/local/sbin/trim-db-init.sh" 2>/dev/null || true
+echo "[fix_rootfs] trim-db-init 已改成独立脚本（避免 systemd 引号问题）"
+
+ln -sf ../trim-db-init.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-db-init.service" 2>/dev/null || true
 echo "[fix_rootfs] 已装 trim-db-init（等 PostgreSQL 就绪后补建 fnOS 表）"
+
+
+
+# ==========================================================================
+# ⑰ 存储操作辅助：fnOS 创建/删除存储空间时自动释放 /vol1 占用
+#
+# 问题实证（板子 journalctl）：
+#   删除存储空间时失败：
+#     umount -A -R --force /dev/dm-0  →  EXITSTATUS=32（device busy）
+#     lvremove --force --force -y     →  EXITSTATUS=5
+#   原因：
+#     trim_file_monitor (PID 1477) 持有 /vol1 目录句柄（lsof 可见 FD 20r DIR）
+#     → umount 失败 → 后续 lvremove/vgremove 全部失败
+#     → 网页显示"删除失败"
+#
+#   手动测试：先 systemctl stop trim_file_monitor finder_service dlcenter
+#             再 umount /vol1 → 成功，lvremove 也成功
+#
+# 本服务做两件事：
+#   1. 提供一个脚本 /usr/local/sbin/storage-release.sh，手动调用可释放占用
+#   2. 开机时给 fnOS 的服务加 After 依赖，让 trim_file_monitor 不要过早打开 /vol1
+#
+# 用法（SSH 里删除存储空间失败时）：
+#   sudo /usr/local/sbin/storage-release.sh
+#   然后网页上重新点删除
+# ==========================================================================
+cat > "$MNT/usr/local/sbin/storage-release.sh" <<'RELEASEEOF'
+#!/bin/bash
+# 释放 /vol1 上的所有占用，让 fnOS 能正常 umount / 删除存储空间
+# 用法：sudo storage-release.sh [--restore]
+#   --restore  操作完恢复服务
+
+RESTORE=0
+[ "$1" = "--restore" ] && RESTORE=1
+
+echo "[storage-release] 停止占用 /vol1 的服务..."
+for s in trim_file_monitor finder_service auto_thumbnailer_service \
+         dlcenter trim_app_center cloud_storage_dav avahi; do
+    if systemctl is-active "$s" >/dev/null 2>&1; then
+        systemctl stop "$s" 2>/dev/null && echo "  停 $s"
+    fi
+done
+
+sleep 2
+
+# 处理所有 /vol 开头的挂载点
+for mp in $(mount | grep -oP 'on \K/vol[0-9]+' | sort -u); do
+    echo "[storage-release] 卸载 $mp"
+    umount "$mp" 2>/dev/null || umount -l "$mp" 2>/dev/null || true
+done
+
+# 也处理 fnOS 内部的 /fs
+if mountpoint -q /fs 2>/dev/null; then
+    echo "[storage-release] 卸载 /fs"
+    umount /fs 2>/dev/null || umount -l /fs 2>/dev/null || true
+fi
+
+echo "[storage-release] 释放完成"
+echo "  现在可以去网页上操作存储空间了"
+
+if [ "$RESTORE" = "1" ]; then
+    echo "[storage-release] 恢复服务..."
+    systemctl start trim_file_monitor finder_service trim_app_center 2>/dev/null
+    echo "  已恢复"
+fi
+
+exit 0
+RELEASEEOF
+chmod 755 "$MNT/usr/local/sbin/storage-release.sh" 2>/dev/null || true
+
+# 给 trim_file_monitor 加 After，确保它不会在 fnOS 挂载之前打开 /vol1
+mkdir -p "$MNT/etc/systemd/system/trim_file_monitor.service.d" 2>/dev/null || true
+cat > "$MNT/etc/systemd/system/trim_file_monitor.service.d/10-wait-vol1.conf" <<'DROPEOF'
+[Unit]
+# 2026-11-25：把启动顺序调到 trim_main 之后，
+# 避免 fnOS 还在创建/挂载存储空间时 trim_file_monitor 就打开 /vol1，
+# 导致后续 umount 报 device busy（网页上"删除存储空间"失败）
+After=trim_main.service postgresql.service
+Wants=trim_main.service
+DROPEOF
+echo "[fix_rootfs] 已装 storage-release.sh + trim_file_monitor 启动顺序修正"
 
 
 echo "[fix_rootfs] 全部完成"
