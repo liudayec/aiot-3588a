@@ -7071,8 +7071,6 @@
 				line-name = "4g_reset";
 			};
 
-
-
 			usb0-power-hog {
 				gpio-hog;
 				gpios = <0x1ac 0x00 0x00>;
@@ -7080,44 +7078,40 @@
 				line-name = "usb0_power";
 			};
 
-			/* === 2026-11-25 补齐：Android 原厂 smdtio 要求的全部 16 脚 === */
 			phone-en-hog {
 				gpio-hog;
-				gpios = <0x1ac 0x0e 0x00>;	/* pin 14 = phone_en，4G 总使能 */
+				gpios = <0x1ac 0x0e 0x00>;
 				output-high;
 				line-name = "phone_en";
 			};
 
-
-
 			io1-hog {
 				gpio-hog;
-				gpios = <0x1ac 0x09 0x00>;	/* pin 9 */
+				gpios = <0x1ac 0x09 0x00>;
 				output-high;
 				line-name = "io1";
 			};
 
 			io2-hog {
 				gpio-hog;
-				gpios = <0x1ac 0x0a 0x00>;	/* pin 10 */
+				gpios = <0x1ac 0x0a 0x00>;
 				output-high;
 				line-name = "io2";
 			};
 
 			io3-hog {
 				gpio-hog;
-				gpios = <0x1ac 0x0b 0x00>;	/* pin 11 */
+				gpios = <0x1ac 0x0b 0x00>;
 				output-high;
 				line-name = "io3";
 			};
 
 			io4-hog {
 				gpio-hog;
-				gpios = <0x1ac 0x0c 0x00>;	/* pin 12 */
+				gpios = <0x1ac 0x0c 0x00>;
 				output-high;
 				line-name = "io4";
 			};
-
 		};
 
 		usb-typec@22 {
@@ -9383,12 +9377,13 @@
 			label = "pwr";
 			default-state = "on";
 		};
-			led-2 {
-				gpios = <0x1ac 0x04 0x00>;
-				label = "data";
-				linux,default-trigger = "mmc0";
-				default-state = "on";
-			};
+
+		led-2 {
+			gpios = <0x1ac 0x04 0x00>;
+			label = "data";
+			linux,default-trigger = "mmc0";
+			default-state = "on";
+		};
 
 		led-3 {
 			gpios = <0x1ac 0x01 0x00>;
