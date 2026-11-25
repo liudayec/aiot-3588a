@@ -130,14 +130,28 @@ echo "[fix_rootfs] 已安装 trim-vol1-heal.service"
 # ==========================================================================
 cat > "$MNT/etc/systemd/system/trim-4g-power.service" <<'G4EOF'
 [Unit]
-Description=Power on 4G module (PCA9555, with power cycle)
+Description=4G module power cycle + reset sequence
+DefaultDependencies=no
 After=local-fs.target
-ConditionPathExists=/sys/class/gpio
+Before=trim-4g-apn.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/bash -c 'for g in 513 515 517 519 520; do if [ ! -d /sys/class/gpio/gpio$g ]; then echo $g > /sys/class/gpio/export 2>/dev/null; sleep 0.1; fi; if [ -d /sys/class/gpio/gpio$g ]; then echo out > /sys/class/gpio/gpio$g/direction 2>/dev/null; fi; done; echo 1 > /sys/class/gpio/gpio513/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio519/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio520/value 2>/dev/null; echo 0 > /sys/class/gpio/gpio517/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio515/value 2>/dev/null; sleep 1.5; echo 1 > /sys/class/gpio/gpio517/value 2>/dev/null; sleep 1.0; echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; exit 0'
+# 4G 电源时序（板子实测必须完整脉冲，单纯设电平模块不枚举）
+#   4g_power(517) = 0     断电
+#   4g_reset(515) = 1     复位有效（逻辑高，ACTIVE_LOW → 物理高）
+#   sleep 1.5
+#   4g_power(517) = 1     上电
+#   sleep 1.0
+#   4g_reset(515) = 0     释放复位（物理低）
+#
+# ★ 绝对不要碰 513(pin1=4g灯) / 519(pin7=pwr灯) / 516(pin4=data灯)
+#   这三个归 DTB 的 gpio-leds 管理，sysfs 再动就会和 LED 子系统打架
+#   （之前碰了，导致红灯一直亮 / LED 状态错乱）
+#
+# 只碰：515(4g_reset) 517(4g_power) 520(4g_disable)
+ExecStart=/bin/bash -c 'for g in 515 517 520; do if [ ! -d /sys/class/gpio/gpio$g ]; then echo $g > /sys/class/gpio/export 2>/dev/null; sleep 0.1; fi; if [ -d /sys/class/gpio/gpio$g ]; then echo out > /sys/class/gpio/gpio$g/direction 2>/dev/null; fi; done; echo 1 > /sys/class/gpio/gpio520/value 2>/dev/null; echo 0 > /sys/class/gpio/gpio517/value 2>/dev/null; echo 1 > /sys/class/gpio/gpio515/value 2>/dev/null; sleep 1.5; echo 1 > /sys/class/gpio/gpio517/value 2>/dev/null; sleep 1.0; echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; exit 0'
 
 [Install]
 WantedBy=multi-user.target
