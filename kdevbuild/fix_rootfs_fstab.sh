@@ -373,14 +373,21 @@ echo "[fix_rootfs] 已装 trim-network-route.service（WiFi 主路由）"
 # ==========================================================================
 cat > "$MNT/etc/systemd/system/trim-4g-apn.service" <<'APNEOF'
 [Unit]
-Description=Configure 4G APN to ctlte (China Telecom LTE)
-After=local-fs.target
+Description=Configure 4G data call (APN=ctnet + QIACT + QNETDEVCTL bind to usb0)
+After=local-fs.target trim-4g-power.service
+Wants=trim-4g-power.service
 ConditionPathExists=/dev/ttyUSB2
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/bash -c 'i=0; while [ ! -e /dev/ttyUSB2 ] && [ $i -lt 30 ]; do sleep 2; i=$((i+1)); done; [ -e /dev/ttyUSB2 ] || exit 0; sleep 15; printf "AT+QICSGP=1,1,\"ctlte\",\"\",\"\",0\r" > /dev/ttyUSB2; sleep 2; printf "AT+QIDEACT=1\r" > /dev/ttyUSB2; sleep 2; printf "AT+QIACT=1\r" > /dev/ttyUSB2; sleep 3; exit 0'
+# 2026-11-25 板子实测：Android 的 libreference-ril-quectel.so 用这套流程
+#   AT+QICSGP   设 APN（ctnet + 电信认证 ctnet@mycdma.cn）
+#   AT+QIDEACT  去激活
+#   AT+QIACT    激活 PDP（拿到运营商 IP，如 10.143.40.45）
+#   AT+QNETDEVCTL=1,1,1   ★★★ 把 PDP 绑定到 usb0 网卡
+#                         —— 少了这一步，usb0 有 IP 但完全不通！
+ExecStart=/bin/bash -c 'D=/dev/ttyUSB2; i=0; while [ ! -e $D ] && [ $i -lt 40 ]; do sleep 2; i=$((i+1)); done; [ -e $D ] || exit 0; sleep 12; printf "AT+QICSGP=1,1,\"ctnet\",\"ctnet@mycdma.cn\",\"ctnet@mycdma.cn\",0\r" > $D; sleep 2; printf "AT+QIDEACT=1\r" > $D; sleep 3; printf "AT+QIACT=1\r" > $D; sleep 6; printf "AT+QNETDEVCTL=1,1,1\r" > $D; sleep 3; exit 0'
 
 [Install]
 WantedBy=multi-user.target
