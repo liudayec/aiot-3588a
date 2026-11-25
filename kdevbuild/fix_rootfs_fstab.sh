@@ -365,18 +365,19 @@ echo "[fix_rootfs] 已装 trim-nca9555-all.service（16 脚兜底）"
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/wan-failover.sh" <<'WANEOF'
 #!/bin/bash
-# WAN 自动选路（2026-11-25）
-# 需求：三个网口同时在线，但系统要自动选「真正能访问外网」的那条。
-#       某个口有 IP 但上不了外网（例如 eth0 直连电脑而电脑没做 NAT），
-#       自动让位给别的口，不需要人工干预。
+# WAN 自动选路（2026-11-26 修正）
+# 三网口同时在线，自动选真正能访问外网的那条。
+# 某个口有 IP 但上不了外网时自动让位。
 #
-# 原理：ping -I <网口> 会 SO_BINDTODEVICE，真正从该网口发出去。
-#       三个候选主机轮着试，任一通就算这个口能上外网。
-#       能通的口 metric 设 50，其余设 600，内核自动走 metric 最小的。
-#       每 15 秒重测，恢复了自动提上来。
-TEST_HOSTS="223.5.5.5 114.114.114.114 8.8.8.8"
+# ★ 关键修复：改了 route-metric 之后必须 nmcli con up 重新激活，
+#   否则路由表不会更新（之前只改配置，路由表永远停在旧 metric）。
+#
+# ★ 注意：不要反复重启连接，只在 metric 真的变化时才重新激活，
+#   并且用 down + up 而不是 reload（reload 不一定刷新路由）。
 
-# 网口|连接名（按偏好顺序：WiFi > 4G > 有线）
+TEST_HOSTS="223.5.5.5 8.8.8.8"
+
+# 网口|连接名|可用时metric|不可用metric
 CAND_IFS=("wlan0" "usb0" "eth0")
 CAND_NAMES=("Xiaomi_8D9F_5G-wlan0" "4G-USB0" "Wired connection 1")
 GOOD_METRIC=50
@@ -400,6 +401,7 @@ for i in 0 1 2; do
   fi
 done
 
+CHANGED=0
 for i in 0 1 2; do
   ifc="${CAND_IFS[$i]}"
   name="${CAND_NAMES[$i]}"
@@ -408,10 +410,35 @@ for i in 0 1 2; do
   if [ "$cur" != "$m" ]; then
     nmcli con mod "$name" ipv4.route-metric "$m" 2>/dev/null \
       && echo "[wan-failover] ${ifc} metric ${cur} -> ${m}"
+    CHANGED=$((CHANGED+1))
+    # 只有当前已激活的连接才需要重新激活
+    if nmcli -t -f DEVICE,STATE dev status 2>/dev/null | grep -q "^${ifc}:connected"; then
+      nmcli con down "$name" >/dev/null 2>&1
+      sleep 1
+      nmcli con up "$name" >/dev/null 2>&1 && echo "[wan-failover] ${ifc} 已重新激活"
+    fi
   fi
 done
 
+# 如果没有任何变化，顺带确认路由表 metric 与配置一致
+if [ "$CHANGED" = "0" ]; then
+  for i in 0 1 2; do
+    ifc="${CAND_IFS[$i]}"
+    name="${CAND_NAMES[$i]}"
+    want=$BAD_METRIC
+    [ "$ifc" = "$WINNER" ] && want=$GOOD_METRIC
+    have=$(ip route show default 2>/dev/null | grep "dev ${ifc}" | grep -oP 'metric \K\d+' | head -1)
+    if [ -n "$have" ] && [ "$have" != "$want" ]; then
+      echo "[wan-failover] ${ifc} 路由 metric=${have} 与配置 ${want} 不一致，重新激活"
+      nmcli con down "$name" >/dev/null 2>&1
+      sleep 1
+      nmcli con up "$name" >/dev/null 2>&1
+    fi
+  done
+fi
+
 echo "[wan-failover] winner=${WINNER:-none}"
+
 WANEOF
 chmod 755 "$MNT/usr/local/sbin/wan-failover.sh" 2>/dev/null || true
 
