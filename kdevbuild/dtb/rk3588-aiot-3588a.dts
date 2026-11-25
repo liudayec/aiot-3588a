@@ -8918,6 +8918,7 @@
 		phy-names = "hdmi";
 		#sound-dai-cells = <0x00>;
 		status = "okay";
+		enable-gpios = <0x101 0x16 0x00>;
 		frl-enable-gpios = <0x101 0x16 0x01>;
 		phandle = <0x1be>;
 
@@ -9357,7 +9358,7 @@
 
 		recovery {
 			debounce-interval = <0x64>;
-			gpios = <0x101 0x06 0x01>;
+			gpios = <0x101 0x09 0x01>;
 			label = "GPIO RECOVERY";
 			linux,code = <0x42>;
 		};

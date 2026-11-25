@@ -723,5 +723,60 @@ WantedBy=multi-user.target
 HEALSVC_EOF
 ln -sf ../trim-vol1-heal.service "$MNT/etc/systemd/system/multi-user.target.wants/trim-vol1-heal.service" 2>/dev/null || true
 echo "[fix_rootfs] 已装 trim-vol1-heal（独立脚本版）"
+
+# ==========================================================================
+# ⑲ reboot-loader：一键进入 Loader（USB 烧写模式）
+#
+# 背景（Android 固件分析结论）：
+#   parameter.txt 里 bootdelay=0、preboot= 为空，
+#   所以开机时 u-boot 根本不检查按键，物理按键进不了 Loader。
+#   uboot.img-unpack/fdt.dts 里 adc-keys 虽然定义了 volumeup-key，
+#   但 preboot 为空，这个驱动不会被调用来作为启动模式判断。
+#
+#   唯一可靠方式：写 reboot-mode 寄存器（syscon-reboot-mode）
+#     syscon@fd588000, offset 0x80 → 0xfd588080
+#     mode-loader = 0x5242c301
+#   板子实测有效，重启后进入 LOADER 等待 USB 烧写。
+# ==========================================================================
+cat > "$MNT/usr/local/sbin/reboot-loader.sh" <<'REBOOTEOF'
+#!/bin/bash
+# 进入 Loader（USB 烧写）模式
+# 用法：sudo reboot-loader
+set -e
+
+if [ "$(id -u)" != "0" ]; then
+    echo "需要 root 权限：sudo reboot-loader"
+    exit 1
+fi
+
+echo "写入 reboot-mode = loader ..."
+python3 - <<'PYEOF'
+import os, mmap, struct
+ADDR = 0xfd588000
+OFF  = 0x80
+VAL  = 0x5242c301   # mode-loader
+
+fd = os.open('/dev/mem', os.O_RDWR | os.O_SYNC)
+try:
+    m = mmap.mmap(fd, 4096, offset=ADDR)
+    before = struct.unpack('<I', m[OFF:OFF+4])[0]
+    m[OFF:OFF+4] = struct.pack('<I', VAL)
+    after = struct.unpack('<I', m[OFF:OFF+4])[0]
+    print('  0x%08x: 0x%08x -> 0x%08x' % (ADDR + OFF, before, after))
+finally:
+    os.close(fd)
+PYEOF
+
+sync
+echo "重启进入 Loader 模式..."
+echo "重启后请用 USB Type-C 连接电脑，打开 RKDevTool 烧写"
+sleep 1
+reboot -f
+REBOOTEOF
+chmod 755 "$MNT/usr/local/sbin/reboot-loader.sh" 2>/dev/null || true
+ln -sf /usr/local/sbin/reboot-loader.sh "$MNT/usr/local/sbin/reboot-loader" 2>/dev/null || true
+echo "[fix_rootfs] 已装 reboot-loader（一键进 Loader）"
+
+
 echo "[fix_rootfs] 全部完成"
 exit 0
