@@ -7071,19 +7071,7 @@
 				line-name = "4g_reset";
 			};
 
-			usb2-power-hog {
-				gpio-hog;
-				gpios = <0x1ac 0x01 0x00>;
-				output-high;
-				line-name = "usb2_power";
-			};
 
-			usb1-power-hog {
-				gpio-hog;
-				gpios = <0x1ac 0x07 0x00>;
-				output-high;
-				line-name = "usb1_power";
-			};
 
 			usb0-power-hog {
 				gpio-hog;
@@ -7100,19 +7088,7 @@
 				line-name = "phone_en";
 			};
 
-			red-led-hog {
-				gpio-hog;
-				gpios = <0x1ac 0x04 0x00>;	/* pin 4 = red_led */
-				output-high;
-				line-name = "red_led";
-			};
 
-			breathe-led-hog {
-				gpio-hog;
-				gpios = <0x1ac 0x06 0x00>;	/* pin 6 = breathe_led (ACTIVE_LOW) */
-				output-low;
-				line-name = "breathe_led";
-			};
 
 			io1-hog {
 				gpio-hog;
@@ -9406,6 +9382,12 @@
 			label = "pwr";
 			default-state = "on";
 		};
+			led-2 {
+				gpios = <0x1ac 0x04 0x00>;
+				label = "data";
+				linux,default-trigger = "mmc0";
+				default-state = "on";
+			};
 
 		led-3 {
 			gpios = <0x1ac 0x01 0x00>;
