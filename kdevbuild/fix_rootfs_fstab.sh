@@ -386,35 +386,76 @@ echo "[fix_rootfs] 已装 trim-nca9555-all.service（16 脚兜底）"
 #
 # 修复：WiFi 做主路由（metric 50），eth0 降级（200），4G 最后（300）
 # ==========================================================================
-cat > "$MNT/etc/systemd/system/cat > "$MNT/etc/systemd/system/cat > "$MNT/etc/systemd/system/trim-network-route.service" <<'ROUTEEOF'
+cat > "$MNT/usr/local/sbin/wan-failover.sh" <<'WANEOF'
+#!/bin/bash
+# WAN 自动选路（2026-11-25）
+# 需求：三个网口同时在线，但系统要自动选「真正能访问外网」的那条。
+#       某个口有 IP 但上不了外网（例如 eth0 直连电脑而电脑没做 NAT），
+#       自动让位给别的口，不需要人工干预。
+#
+# 原理：ping -I <网口> 会 SO_BINDTODEVICE，真正从该网口发出去。
+#       三个候选主机轮着试，任一通就算这个口能上外网。
+#       能通的口 metric 设 50，其余设 600，内核自动走 metric 最小的。
+#       每 15 秒重测，恢复了自动提上来。
+TEST_HOSTS="223.5.5.5 114.114.114.114 8.8.8.8"
+
+# 网口|连接名（按偏好顺序：WiFi > 4G > 有线）
+CAND_IFS=("wlan0" "usb0" "eth0")
+CAND_NAMES=("Xiaomi_8D9F_5G-wlan0" "4G-USB0" "Wired connection 1")
+GOOD_METRIC=50
+BAD_METRIC=600
+
+net_ok() {
+  local ifc="$1" h
+  [ -d "/sys/class/net/$ifc" ] || return 1
+  ip -4 addr show "$ifc" 2>/dev/null | grep -q "inet " || return 1
+  for h in $TEST_HOSTS; do
+    ping -c 1 -W 2 -I "$ifc" "$h" >/dev/null 2>&1 && return 0
+  done
+  return 1
+}
+
+WINNER=""
+for i in 0 1 2; do
+  if net_ok "${CAND_IFS[$i]}"; then
+    WINNER="${CAND_IFS[$i]}"
+    break
+  fi
+done
+
+for i in 0 1 2; do
+  ifc="${CAND_IFS[$i]}"
+  name="${CAND_NAMES[$i]}"
+  if [ "$ifc" = "$WINNER" ]; then m=$GOOD_METRIC; else m=$BAD_METRIC; fi
+  cur=$(nmcli -g ipv4.route-metric con show "$name" 2>/dev/null)
+  if [ "$cur" != "$m" ]; then
+    nmcli con mod "$name" ipv4.route-metric "$m" 2>/dev/null \
+      && echo "[wan-failover] ${ifc} metric ${cur} -> ${m}"
+  fi
+done
+
+echo "[wan-failover] winner=${WINNER:-none}"
+WANEOF
+chmod 755 "$MNT/usr/local/sbin/wan-failover.sh" 2>/dev/null || true
+
+cat > "$MNT/etc/systemd/system/trim-wan-failover.service" <<'WANSVCEOF'
 [Unit]
-Description=Route metrics: wlan0(50) > usb0(300) > eth0(400), auto failover
+Description=WAN auto failover by real internet reachability
 After=NetworkManager.service
 Wants=NetworkManager.service
 
 [Service]
-Type=oneshot
-RemainAfterExit=yes
-# 2026-11-25: 原来用 awk -F: "$2==..." 解析，
-# systemd 把 $2 当自己的变量传空，awk 报 syntax error at or near ==，
-# 导致 metric 从来没设成功，eth0 一直抢默认路由。
-# 现在直接按连接名 nmcli con mod，不用 awk。
-#
-# 顺序设计（越小越优先，断了自动跳下一个）：
-#   wlan0 metric 50    WiFi，主路上网
-#   usb0  metric 300   4G，WiFi 断了自动接管
-#   eth0  metric 400   直连电脑，只做本地管理（电脑不做 NAT 时不通外网）
-#
-# 关键：eth0 必须排在 4G 后面。eth0 有 IP 有 ARP，NM 认为它"通"，
-# 如果它 metric 比 4G 小，WiFi 一断流量会先冲向这个黑洞，不会自动跳 4G。
-ExecStart=/bin/bash -c 'i=0; while [ $i -lt 20 ]; do /usr/bin/nmcli -t -f NAME con show 2>/dev/null | grep -q . && break; sleep 2; i=$((i+1)); done; /usr/bin/nmcli con mod "Xiaomi_8D9F_5G-wlan0" ipv4.route-metric 50 2>/dev/null; /usr/bin/nmcli con mod "4G-USB0" ipv4.route-metric 300 2>/dev/null; /usr/bin/nmcli con mod "Wired connection 1" ipv4.route-metric 400 2>/dev/null; exit 0'
+Type=simple
+ExecStart=/bin/bash -c 'sleep 25; while true; do /usr/local/sbin/wan-failover.sh; sleep 15; done'
+Restart=always
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
-ROUTEEOF
-ln -sf ../trim-network-route.service \
-  "$MNT/etc/systemd/system/multi-user.target.wants/trim-network-route.service" 2>/dev/null || true
-echo "[fix_rootfs] 已装 trim-network-route.service（WiFi 主路由）"
+WANSVCEOF
+ln -sf ../trim-wan-failover.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-wan-failover.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-wan-failover（按实际外网连通性自动选路）"
 
 # ==========================================================================
 # ⑭ 4G APN 配置（中国电信 ctlte）
