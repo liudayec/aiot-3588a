@@ -9357,7 +9357,7 @@
 
 		recovery {
 			debounce-interval = <0x64>;
-			gpios = <0x101 0x09 0x01>;
+			gpios = <0x101 0x06 0x01>;
 			label = "GPIO RECOVERY";
 			linux,code = <0x42>;
 		};
