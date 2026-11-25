@@ -321,14 +321,31 @@ echo "[fix_rootfs] 已预置 4G-USB0 连接（静态 192.168.225.2/24）"
 # --- ⑥ nca9555 全部 GPIO 兜底（DTB hog 之外的保险）---
 cat > "$MNT/etc/systemd/system/trim-nca9555-all.service" <<'NCAEOF'
 [Unit]
-Description=Set all nca9555 GPIOs per Android smdtio defaults (fallback for DTB hog)
+Description=Set nca9555 GPIOs for 4G only (LEDs belong to gpio-leds, do NOT touch)
 After=local-fs.target
 ConditionPathExists=/sys/class/gpio
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/bash -c 'for p in 0 1 4 5 6 7 8 9 10 11 12 14; do g=$((512+p)); if [ ! -d /sys/class/gpio/gpio$g ]; then echo $g > /sys/class/gpio/export 2>/dev/null; sleep 0.1; fi; if [ -d /sys/class/gpio/gpio$g ]; then echo out > /sys/class/gpio/gpio$g/direction 2>/dev/null; echo 1 > /sys/class/gpio/gpio$g/value 2>/dev/null; fi; done; if [ -d /sys/class/gpio/gpio515 ]; then echo out > /sys/class/gpio/gpio515/direction 2>/dev/null; echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; fi; exit 0'
+# ★ 绝对不要碰这几个脚，它们归 DTB 的 gpio-leds 节点管：
+#   pin 1 = 4g   (led-3, default-state=on)
+#   pin 4 = data (led-2, linux,default-trigger=mmc0)  ← 红灯，启动亮/eMMC空闲灭
+#   pin 7 = pwr  (led-1, default-state=on)
+# 之前把 1/4/7 也一并拉高，导致：
+#   - 红灯（data, pin4）被强拉高 → 一直亮，mmc0 触发器失效
+#   - leds 和 sysfs 抢同一个脚，状态打架
+# 现在只配 4G 需要的那几个：
+#   pin 0  usb0_power  high
+#   pin 3  4g_reset    LOW (ACTIVE_LOW)
+#   pin 5  4g_power    high
+#   pin 8  4g_disable  high
+#   pin 9  io1         high
+#   pin 10 io2         high
+#   pin 11 io3         high
+#   pin 12 io4         high
+#   pin 14 phone_en    high
+ExecStart=/bin/bash -c 'for p in 0 3 5 8 9 10 11 12 14; do g=$((512+p)); if [ ! -d /sys/class/gpio/gpio$g ]; then echo $g > /sys/class/gpio/export 2>/dev/null; sleep 0.1; fi; if [ -d /sys/class/gpio/gpio$g ]; then echo out > /sys/class/gpio/gpio$g/direction 2>/dev/null; echo 1 > /sys/class/gpio/gpio$g/value 2>/dev/null; fi; done; if [ -d /sys/class/gpio/gpio515 ]; then echo out > /sys/class/gpio/gpio515/direction 2>/dev/null; echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; fi; exit 0'
 
 [Install]
 WantedBy=multi-user.target
