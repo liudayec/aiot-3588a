@@ -9392,7 +9392,7 @@
 		led-3 {
 			gpios = <0x1ac 0x01 0x00>;
 			label = "4g";
-			default-state = "on";
+			default-state = "off";
 		};
 	};
 
