@@ -7091,6 +7091,57 @@
 				output-high;
 				line-name = "usb0_power";
 			};
+
+			/* === 2026-11-25 补齐：Android 原厂 smdtio 要求的全部 16 脚 === */
+			phone-en-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x0e 0x00>;	/* pin 14 = phone_en，4G 总使能 */
+				output-high;
+				line-name = "phone_en";
+			};
+
+			red-led-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x04 0x00>;	/* pin 4 = red_led */
+				output-high;
+				line-name = "red_led";
+			};
+
+			breathe-led-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x06 0x00>;	/* pin 6 = breathe_led (ACTIVE_LOW) */
+				output-high;
+				line-name = "breathe_led";
+			};
+
+			io1-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x09 0x00>;	/* pin 9 */
+				output-high;
+				line-name = "io1";
+			};
+
+			io2-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x0a 0x00>;	/* pin 10 */
+				output-high;
+				line-name = "io2";
+			};
+
+			io3-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x0b 0x00>;	/* pin 11 */
+				output-high;
+				line-name = "io3";
+			};
+
+			io4-hog {
+				gpio-hog;
+				gpios = <0x1ac 0x0c 0x00>;	/* pin 12 */
+				output-high;
+				line-name = "io4";
+			};
+
 		};
 
 		usb-typec@22 {
@@ -9356,13 +9407,6 @@
 			default-state = "on";
 		};
 
-		led-2 {
-			gpios = <0x1ac 0x04 0x00>;
-			label = "data";
-			linux,default-trigger = "mmc0";
-			default-state = "on";
-		};
-
 		led-3 {
 			gpios = <0x1ac 0x01 0x00>;
 			label = "4g";
@@ -9505,7 +9549,6 @@
 		compatible = "mmc-pwrseq-simple";
 		pinctrl-names = "default";
 		pinctrl-0 = <0x601>;
-		reset-gpios = <0x157 0x14 0x01>;
 		clocks = <0x1cb>;
 		clock-names = "ext_clock";
 		post-power-on-delay-ms = <0xc8>;
@@ -9516,10 +9559,13 @@
 		compatible = "wlan-platdata";
 		pinctrl-names = "default";
 		pinctrl-0 = <0x602>;
-		wifi_chip_type = "ap6398s";
+		wifi_chip_type = "ap6256";
 		WIFI,host_wake_irq = <0x157 0x0a 0x00>;
 		WIFI,poweren-gpios = <0x157 0x14 0x00>;
 		WIFI,poweren_gpio = <0x157 0x14 0x00>;
+		WIFI,host_wake-gpios = <0x157 0x0a 0x00>;
+		WIFI,host_wake-gpio = <0x157 0x0a 0x00>;
+		WIFI,reset-gpios = <0x157 0x14 0x00>;
 		status = "okay";
 	};
 
@@ -9527,13 +9573,18 @@
 		compatible = "bluetooth-platdata";
 		clocks = <0x1cb>;
 		clock-names = "ext_clock";
-		uart_rts_gpios = <0x157 0x14 0x01>;
 		pinctrl-names = "default\0rts_gpio";
 		pinctrl-0 = <0x1cc 0x1cd 0x1ce 0x1cf>;
 		pinctrl-1 = <0x1d0>;
 		BT,reset-gpios = <0x157 0x16 0x00>;
 		BT,wake-gpios = <0x157 0x15 0x00>;
 		BT,wake_host-gpios = <0x157 0x00 0x00>;
+		status = "okay";
+	};
+
+	bcmdhd_wlan {
+		compatible = "android,bcmdhd_wlan";
+		gpio_wl_reg_on = <0x10c 0x0f 0x00>;
 		status = "okay";
 	};
 };

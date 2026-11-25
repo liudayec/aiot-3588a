@@ -220,5 +220,121 @@ ln -sf ../trim-wifi-guard.service \
 echo "[fix_rootfs] 已安装 trim-wifi-guard.service（WiFi 兜底）"
 
 
+
+# ==========================================================================
+# ⑫ 4G 显示与联网修复（EC200A / nca9555，2026-11-25 板子实测）
+#
+# 问题1：ModemManager 把 usb0 当作 modem 的附属网口独占，
+#        NetworkManager 会把它标记为 unmanaged (reason 'removed')，
+#        fnOS 网络设置里完全看不到 4G。
+#    → mask ModemManager，让 usb0 归 NetworkManager 管（普通 ethernet）
+#
+# 问题2：EC200A 的 ECM 模式没有 DHCP 服务器，usb0 拿不到 IPv4。
+#    → 静态配 192.168.225.2/24，网关 192.168.225.1
+#
+# 问题3：NetworkManager 的 MAC 随机化让 WiFi 连接失败（bcmdhd 不支持运行中改 MAC）
+#    → 关掉 wifi.scan-rand-mac-address + wifi.cloned-mac-address
+#
+# 问题4：nca9555 的 16 个 GPIO 必须全部按 Android 原厂 smdtio 默认值配置，
+#        特别是 phone_en(pin14)，少了它 4G 拨号正常但 usb0 拿不到 IP。
+#    → DTB 里已加 13 个 gpio-hog，这里再补一个 systemd 服务兜底
+# ==========================================================================
+
+# --- ① 关闭 NetworkManager 的 MAC 随机化（WiFi 连接必需）---
+mkdir -p "$MNT/etc/NetworkManager/conf.d" 2>/dev/null || true
+cat > "$MNT/etc/NetworkManager/conf.d/00-wifi-no-randmac.conf" <<'NMRANDEOF'
+[device]
+wifi.scan-rand-mac-address=no
+
+[connection]
+wifi.cloned-mac-address=permanent
+wifi.mac-address-randomization=never
+ethernet.cloned-mac-address=permanent
+NMRANDEOF
+echo "[fix_rootfs] 已装 00-wifi-no-randmac.conf（关闭 MAC 随机化）"
+
+# --- ② 让 NetworkManager 管理 usb0 ---
+cat > "$MNT/etc/NetworkManager/conf.d/10-usb0-nm.conf" <<'NMUSBEOF'
+# 让 NetworkManager 把 usb0 当普通以太网管（4G）
+[device-usb0]
+match-device=interface-name:usb0
+managed=true
+
+[keyfile]
+unmanaged-devices=none
+NMUSBEOF
+echo "[fix_rootfs] 已装 10-usb0-nm.conf（usb0 归 NM 管）"
+
+# --- ③ mask ModemManager（否则它独占 usb0，fnOS 看不到 4G）---
+mkdir -p "$MNT/etc/systemd/system" 2>/dev/null || true
+ln -sf /dev/null "$MNT/etc/systemd/system/ModemManager.service" 2>/dev/null || true
+echo "[fix_rootfs] 已 mask ModemManager（让 usb0 归 NetworkManager）"
+
+# --- ④ 4G usb0 静态 IP 服务（EC200A ECM 模式没有 DHCP）---
+cat > "$MNT/etc/systemd/system/trim-4g-ip.service" <<'G4IPEOF'
+[Unit]
+Description=Configure 4G usb0 static IP (EC200A ECM has no DHCP server)
+After=NetworkManager.service trim-4g-power.service
+Wants=NetworkManager.service trim-4g-power.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c 'for i in $(seq 1 30); do if [ -d /sys/class/net/usb0 ]; then /usr/bin/nmcli con up "4G-USB0" 2>/dev/null && exit 0; fi; sleep 2; done; if [ -d /sys/class/net/usb0 ]; then ip addr add 192.168.225.2/24 dev usb0 2>/dev/null; ip link set usb0 up; ip route replace default via 192.168.225.1 dev usb0 metric 700 2>/dev/null; fi; exit 0'
+
+[Install]
+WantedBy=multi-user.target
+G4IPEOF
+ln -sf ../trim-4g-ip.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-4g-ip.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-4g-ip.service"
+
+# --- ⑤ 预置 4G-USB0 的 NM 连接（静态 IP）---
+mkdir -p "$MNT/etc/NetworkManager/system-connections" 2>/dev/null || true
+cat > "$MNT/etc/NetworkManager/system-connections/4G-USB0.nmconnection" <<'G4CONEOF'
+[connection]
+id=4G-USB0
+uuid=ec4cdc4a-e367-413d-af35-798701cc1ead
+type=ethernet
+interface-name=usb0
+autoconnect=true
+autoconnect-priority=10
+
+[ethernet]
+cloned-mac-address=permanent
+
+[ipv4]
+method=manual
+address1=192.168.225.2/24,192.168.225.1
+dns=114.114.114.114;223.5.5.5;
+dns-search=
+may-fail=false
+
+[ipv6]
+method=ignore
+G4CONEOF
+chmod 600 "$MNT/etc/NetworkManager/system-connections/4G-USB0.nmconnection" 2>/dev/null || true
+echo "[fix_rootfs] 已预置 4G-USB0 连接（静态 192.168.225.2/24）"
+
+# --- ⑥ nca9555 全部 GPIO 兜底（DTB hog 之外的保险）---
+cat > "$MNT/etc/systemd/system/trim-nca9555-all.service" <<'NCAEOF'
+[Unit]
+Description=Set all nca9555 GPIOs per Android smdtio defaults (fallback for DTB hog)
+After=local-fs.target
+ConditionPathExists=/sys/class/gpio
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c 'for p in 0 1 4 5 6 7 8 9 10 11 12 14; do g=$((512+p)); if [ ! -d /sys/class/gpio/gpio$g ]; then echo $g > /sys/class/gpio/export 2>/dev/null; sleep 0.1; fi; if [ -d /sys/class/gpio/gpio$g ]; then echo out > /sys/class/gpio/gpio$g/direction 2>/dev/null; echo 1 > /sys/class/gpio/gpio$g/value 2>/dev/null; fi; done; if [ -d /sys/class/gpio/gpio515 ]; then echo out > /sys/class/gpio/gpio515/direction 2>/dev/null; echo 0 > /sys/class/gpio/gpio515/value 2>/dev/null; fi; exit 0'
+
+[Install]
+WantedBy=multi-user.target
+NCAEOF
+ln -sf ../trim-nca9555-all.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-nca9555-all.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-nca9555-all.service（16 脚兜底）"
+
+
 echo "[fix_rootfs] 全部完成"
 exit 0
