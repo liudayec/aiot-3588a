@@ -11,7 +11,6 @@
 #   ③ 根分区加 x-systemd.growfs，另装 btrfs-growroot.service 兜底
 #   ④ 删掉 /boot/efi 等不存在的挂载行
 #   ⑤ 预建 /vol1（fnOS 存储池挂载点）
-#   ⑥ trim-vol1-heal.service —— /vol1 自愈（After=trim_main，否则被清掉）
 #   ⑦ trim-4g-power.service —— 4G 模块电源/复位时序（PCA9555）
 #   ⑧ WiFi 固件 → /lib/firmware/（bcmdhd 用 request_firmware 加载）
 # ==========================================================================
@@ -86,7 +85,6 @@ ln -sf ../btrfs-growroot.service \
 echo "[fix_rootfs] 已安装 btrfs-growroot.service"
 
 # ==========================================================================
-# ⑦ trim-vol1-heal.service —— /vol1 自愈
 #    时序：After=trim_main（在 fnOS 启动之后再执行，否则 /vol1 会被它清掉）
 # ==========================================================================
 mkdir -p "$MNT/etc/systemd/system/multi-user.target.wants" 2>/dev/null || true
@@ -467,6 +465,46 @@ APNEOF
 ln -sf ../trim-4g-apn.service \
   "$MNT/etc/systemd/system/multi-user.target.wants/trim-4g-apn.service" 2>/dev/null || true
 echo "[fix_rootfs] 已装 trim-4g-apn.service（APN=ctlte）"
+
+
+
+# ==========================================================================
+# ⑯ 修复 fnOS 建表时序（存储池创建卡最后一步的根因）
+#
+# 问题实证（板子 journalctl）：
+#   trim_init.service 的 After 只有 rc-local.service，没等 PostgreSQL：
+#     21:53:37 triminit: Open database error: No such file or directory
+#     21:53:38 triminit: Open database error: ...
+#     21:53:41 triminit: ERROR: relation "mount" does not exist
+#     21:53:43 trim_sac: ERROR: relation "common_config" does not exist
+#
+# 后果：
+#   - trim.mount / trim.storage 等表缺失或为空
+#   - appcenter.common_config 表不存在
+#   - fnOS 网页"创建存储空间"填完参数后写库失败 → 卡在最后一步
+#   - 应用中心"文件夹存储位置"永远空
+#
+# 修复：等 PostgreSQL 真正可连接后重跑 triminit（它会补建缺失的表）
+# ==========================================================================
+cat > "$MNT/etc/systemd/system/trim-db-init.service" <<'DBINITEOF'
+[Unit]
+Description=Re-run triminit after PostgreSQL is actually ready (creates missing tables)
+After=postgresql.service postgresql@15-main.service trim_init.service
+Wants=postgresql.service
+ConditionPathExists=/usr/trim/bin/triminit
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# 最多等 90 秒，直到 pg_isready 成功且能查到 trim 库
+ExecStart=/bin/bash -c 'i=0; while [ $i -lt 45 ]; do if /usr/bin/pg_isready -q -h /var/run/postgresql 2>/dev/null; then break; fi; sleep 2; i=$((i+1)); done; sleep 3; /usr/trim/bin/triminit 2>&1 | /usr/bin/logger -t trim-db-init || true; sleep 2; su - postgres -c "psql -d appcenter -tAc \"select count(*) from information_schema.tables where table_name=$$common_config$$\" > /dev/null" 2>/dev/null || /usr/trim/bin/triminit 2>&1 | /usr/bin/logger -t trim-db-init || true; exit 0'
+
+[Install]
+WantedBy=multi-user.target
+DBINITEOF
+ln -sf ../trim-db-init.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-db-init.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-db-init（等 PostgreSQL 就绪后补建 fnOS 表）"
 
 
 echo "[fix_rootfs] 全部完成"
