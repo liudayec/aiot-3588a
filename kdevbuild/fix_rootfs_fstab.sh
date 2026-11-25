@@ -376,7 +376,6 @@ cat > "$MNT/etc/systemd/system/trim-4g-apn.service" <<'APNEOF'
 Description=Configure 4G data call (APN=ctnet + QIACT + QNETDEVCTL bind to usb0)
 After=local-fs.target trim-4g-power.service
 Wants=trim-4g-power.service
-ConditionPathExists=/dev/ttyUSB2
 
 [Service]
 Type=oneshot

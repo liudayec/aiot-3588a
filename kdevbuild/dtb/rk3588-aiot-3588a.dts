@@ -7110,7 +7110,7 @@
 			breathe-led-hog {
 				gpio-hog;
 				gpios = <0x1ac 0x06 0x00>;	/* pin 6 = breathe_led (ACTIVE_LOW) */
-				output-high;
+				output-low;
 				line-name = "breathe_led";
 			};
 
