@@ -336,5 +336,59 @@ ln -sf ../trim-nca9555-all.service \
 echo "[fix_rootfs] 已装 trim-nca9555-all.service（16 脚兜底）"
 
 
+
+# ==========================================================================
+# ⑬ 三网卡路由优先级（2026-11-25 板子实测）
+#
+# 问题：板子直连电脑时，eth0 的默认路由 metric 100 会抢占默认路由，
+#       所有外网流量发给电脑（电脑没做 NAT）→ 应用中心打不开、上不了网。
+#
+# 修复：WiFi 做主路由（metric 50），eth0 降级（200），4G 最后（300）
+# ==========================================================================
+cat > "$MNT/etc/systemd/system/trim-network-route.service" <<'ROUTEEOF'
+[Unit]
+Description=Set route metrics: WiFi primary, eth0 secondary, 4G last
+After=NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c 'i=0; while [ $i -lt 20 ]; do if /usr/bin/nmcli -t -f NAME con show 2>/dev/null | grep -q .; then break; fi; sleep 2; i=$((i+1)); done; for n in $(/usr/bin/nmcli -t -f NAME,TYPE con show 2>/dev/null | awk -F: "$2==\"802-11-wireless\"{print $1}"); do /usr/bin/nmcli con mod "$n" ipv4.route-metric 50 2>/dev/null; done; for n in $(/usr/bin/nmcli -t -f NAME,DEVICE con show 2>/dev/null | awk -F: "$2==\"eth0\"{print $1}"); do /usr/bin/nmcli con mod "$n" ipv4.route-metric 200 2>/dev/null; done; /usr/bin/nmcli con mod "4G-USB0" ipv4.route-metric 300 2>/dev/null; exit 0'
+
+[Install]
+WantedBy=multi-user.target
+ROUTEEOF
+ln -sf ../trim-network-route.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-network-route.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-network-route.service（WiFi 主路由）"
+
+# ==========================================================================
+# ⑭ 4G APN 配置（中国电信 ctlte）
+#
+# 实测结论：
+#   APN=ctlte  → AT+QPING 返回 0,5,0,5,0,0,0（通！）
+#   APN=ctnet  → AT+QPING 返回 559（不通）
+# 所以必须用 ctlte。
+# ==========================================================================
+cat > "$MNT/etc/systemd/system/trim-4g-apn.service" <<'APNEOF'
+[Unit]
+Description=Configure 4G APN to ctlte (China Telecom LTE)
+After=local-fs.target
+ConditionPathExists=/dev/ttyUSB2
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c 'i=0; while [ ! -e /dev/ttyUSB2 ] && [ $i -lt 30 ]; do sleep 2; i=$((i+1)); done; [ -e /dev/ttyUSB2 ] || exit 0; sleep 15; printf "AT+QICSGP=1,1,\"ctlte\",\"\",\"\",0\r" > /dev/ttyUSB2; sleep 2; printf "AT+QIDEACT=1\r" > /dev/ttyUSB2; sleep 2; printf "AT+QIACT=1\r" > /dev/ttyUSB2; sleep 3; exit 0'
+
+[Install]
+WantedBy=multi-user.target
+APNEOF
+ln -sf ../trim-4g-apn.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-4g-apn.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-4g-apn.service（APN=ctlte）"
+
+
 echo "[fix_rootfs] 全部完成"
 exit 0
