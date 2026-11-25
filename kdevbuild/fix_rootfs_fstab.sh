@@ -386,16 +386,28 @@ echo "[fix_rootfs] 已装 trim-nca9555-all.service（16 脚兜底）"
 #
 # 修复：WiFi 做主路由（metric 50），eth0 降级（200），4G 最后（300）
 # ==========================================================================
-cat > "$MNT/etc/systemd/system/trim-network-route.service" <<'ROUTEEOF'
+cat > "$MNT/etc/systemd/system/cat > "$MNT/etc/systemd/system/cat > "$MNT/etc/systemd/system/trim-network-route.service" <<'ROUTEEOF'
 [Unit]
-Description=Set route metrics: WiFi primary, eth0 secondary, 4G last
+Description=Route metrics: wlan0(50) > usb0(300) > eth0(400), auto failover
 After=NetworkManager.service
 Wants=NetworkManager.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/bash -c 'i=0; while [ $i -lt 20 ]; do if /usr/bin/nmcli -t -f NAME con show 2>/dev/null | grep -q .; then break; fi; sleep 2; i=$((i+1)); done; for n in $(/usr/bin/nmcli -t -f NAME,TYPE con show 2>/dev/null | awk -F: "$2==\"802-11-wireless\"{print $1}"); do /usr/bin/nmcli con mod "$n" ipv4.route-metric 50 2>/dev/null; done; for n in $(/usr/bin/nmcli -t -f NAME,DEVICE con show 2>/dev/null | awk -F: "$2==\"eth0\"{print $1}"); do /usr/bin/nmcli con mod "$n" ipv4.route-metric 200 2>/dev/null; done; /usr/bin/nmcli con mod "4G-USB0" ipv4.route-metric 300 2>/dev/null; exit 0'
+# 2026-11-25: 原来用 awk -F: "$2==..." 解析，
+# systemd 把 $2 当自己的变量传空，awk 报 syntax error at or near ==，
+# 导致 metric 从来没设成功，eth0 一直抢默认路由。
+# 现在直接按连接名 nmcli con mod，不用 awk。
+#
+# 顺序设计（越小越优先，断了自动跳下一个）：
+#   wlan0 metric 50    WiFi，主路上网
+#   usb0  metric 300   4G，WiFi 断了自动接管
+#   eth0  metric 400   直连电脑，只做本地管理（电脑不做 NAT 时不通外网）
+#
+# 关键：eth0 必须排在 4G 后面。eth0 有 IP 有 ARP，NM 认为它"通"，
+# 如果它 metric 比 4G 小，WiFi 一断流量会先冲向这个黑洞，不会自动跳 4G。
+ExecStart=/bin/bash -c 'i=0; while [ $i -lt 20 ]; do /usr/bin/nmcli -t -f NAME con show 2>/dev/null | grep -q . && break; sleep 2; i=$((i+1)); done; /usr/bin/nmcli con mod "Xiaomi_8D9F_5G-wlan0" ipv4.route-metric 50 2>/dev/null; /usr/bin/nmcli con mod "4G-USB0" ipv4.route-metric 300 2>/dev/null; /usr/bin/nmcli con mod "Wired connection 1" ipv4.route-metric 400 2>/dev/null; exit 0'
 
 [Install]
 WantedBy=multi-user.target
