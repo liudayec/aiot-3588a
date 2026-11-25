@@ -778,5 +778,105 @@ ln -sf /usr/local/sbin/reboot-loader.sh "$MNT/usr/local/sbin/reboot-loader" 2>/d
 echo "[fix_rootfs] 已装 reboot-loader（一键进 Loader）"
 
 
+# ==========================================================================
+# ⑳ p5 分区自愈（2026-11-26）
+#
+# 问题实测：
+#   每次用 RKDevTool 刷机，整盘写入后 /dev/mmcblk0p5 会消失。
+#   刷机镜像只含 p1(uboot) / p2(recovery) / p3(boot) / p4(rootfs)，
+#   后面 27.9GB 变成未分区空间。
+#   结果：网页上"创建存储空间"卡在最后一步（因为没有 p5 可选）。
+#
+# 本服务只做一件事：p5 不存在时，从 p4 末尾到磁盘末尾重建分区，
+# 并设置 raid 标记（fnOS 要求）。
+#
+# 绝不格式化，绝不建 mdadm/LVM，绝不碰已有数据。
+# ==========================================================================
+cat > "$MNT/usr/local/sbin/trim-p5-heal.sh" <<'P5EOF'
+#!/bin/bash
+# p5 分区自愈：不存在时重建（保留已有分区和数据）
+DEV=/dev/mmcblk0
+PART=5
+
+# 已有 p5 就退出
+if [ -b "${DEV}p${PART}" ]; then
+    echo "[trim-p5-heal] ${DEV}p${PART} exists, nothing to do"
+    exit 0
+fi
+
+# 检查磁盘和 parted
+[ -b "$DEV" ] || { echo "[trim-p5-heal] $DEV not found"; exit 0; }
+command -v parted >/dev/null 2>&1 || { echo "[trim-p5-heal] parted not found"; exit 0; }
+
+# p4 必须存在
+if [ ! -b "${DEV}p4" ]; then
+    echo "[trim-p5-heal] ${DEV}p4 missing, skip"
+    exit 0
+fi
+
+# 取 p4 结束位置（MiB）
+P4_END=$(parted "$DEV" unit MiB print 2>/dev/null | awk '$1=="4"{gsub("MiB","",$3); print $3}')
+if [ -z "$P4_END" ]; then
+    echo "[trim-p5-heal] cannot read p4 end"
+    exit 0
+fi
+
+# 磁盘总大小（MiB）
+DISK_MB=$(parted "$DEV" unit MiB print 2>/dev/null | awk '/^Disk \/dev/{gsub("MiB","",$3); print $3}')
+if [ -z "$DISK_MB" ]; then
+    DISK_MB=59640
+fi
+
+# 剩余空间小于 1GB 就不建
+REMAIN=$((DISK_MB - P4_END))
+if [ "$REMAIN" -lt 1024 ]; then
+    echo "[trim-p5-heal] only ${REMAIN}MiB left after p4, skip"
+    exit 0
+fi
+
+echo "[trim-p5-heal] p4 ends at ${P4_END}MiB, disk ${DISK_MB}MiB, creating p${PART}"
+
+# 消除可能存在的分区表备份（刷机后常有 GPT backup 在磁盘末尾）
+sgdisk --move-second-header "$DEV" >/dev/null 2>&1 || true
+
+parted -s "$DEV" unit MiB mkpart primary "${P4_END}" 100% 2>&1
+sleep 2
+partprobe "$DEV" 2>/dev/null
+sleep 2
+
+# 设置 raid 标记（fnOS 建存储池需要）
+parted -s "$DEV" set "$PART" raid on 2>&1
+
+sleep 1
+if [ -b "${DEV}p${PART}" ]; then
+    echo "[trim-p5-heal] ${DEV}p${PART} created: $(blockdev --getsize64 ${DEV}p${PART} 2>/dev/null) bytes"
+else
+    echo "[trim-p5-heal] FAILED to create ${DEV}p${PART}"
+fi
+
+exit 0
+P5EOF
+chmod 755 "$MNT/usr/local/sbin/trim-p5-heal.sh" 2>/dev/null || true
+
+cat > "$MNT/etc/systemd/system/trim-p5-heal.service" <<'P5SVCEOF'
+[Unit]
+Description=Re-create missing p5 partition (survives full-disk flash)
+After=local-fs.target
+Before=trim_main.service trim-vol1-heal.service
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/trim-p5-heal.sh
+TimeoutStartSec=60
+
+[Install]
+WantedBy=multi-user.target
+P5SVCEOF
+ln -sf ../trim-p5-heal.service "$MNT/etc/systemd/system/multi-user.target.wants/trim-p5-heal.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-p5-heal（p5 分区丢失时自动重建）"
+
+
 echo "[fix_rootfs] 全部完成"
 exit 0
