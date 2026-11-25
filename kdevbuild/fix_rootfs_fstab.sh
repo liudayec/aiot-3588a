@@ -450,7 +450,9 @@ Wants=NetworkManager.service
 
 [Service]
 Type=simple
-ExecStart=/bin/bash -c 'sleep 25; while true; do /usr/local/sbin/wan-failover.sh; sleep 15; done'
+# 2026-11-26：轮询间隔 15s -> 5s，断网后更快切换
+# 开机先等 20 秒让网络起来，之后每 5 秒测一次
+ExecStart=/bin/bash -c 'sleep 20; while true; do /usr/local/sbin/wan-failover.sh; sleep 5; done'
 Restart=always
 RestartSec=10
 
