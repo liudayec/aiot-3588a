@@ -1,4 +1,4 @@
-﻿name: rockchip kernel develop-6.6
+name: rockchip kernel develop-6.6
 
 on:
   repository_dispatch:
@@ -107,8 +107,10 @@ jobs:
           artifacts: /builder/release/*
           allowUpdates: true
           removeArtifacts: false
-          # 2026-11-25 修复：原来 true，13 个 job 并发上传会互相清空，最后只剩 1 个包
+          # 2026-11-25 最终方案：用 overwrite，同名文件覆盖，不影响其他文件
           replacesArtifacts: false
+          # ★ 关键：同名文件存在时覆盖，否则新编译的包永远传不上（旧文件被跳过）
+          overwrite: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ## 固件刷写指引
