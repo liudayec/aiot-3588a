@@ -100,6 +100,16 @@ jobs:
           ls -alh  /builder/release/*
           md5sum /builder/release/*
 
+      - name: Delete old asset before upload
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # release-action 不支持 overwrite，同名文件会静默跳过
+          # 所以先删掉旧的同名 asset，再上传新的
+          NAME=$(basename /builder/release/*)
+          echo "target asset: $NAME"
+          gh release delete-asset rockchip_develop-6.6 "$NAME" --repo ${{ github.repository }} --yes 2>/dev/null || echo "no old asset to delete"
+          sleep 3
       - name: Upload Image to Release
         uses: ncipollo/release-action@main
         with:
@@ -109,8 +119,6 @@ jobs:
           removeArtifacts: false
           # 2026-11-25 最终方案：用 overwrite，同名文件覆盖，不影响其他文件
           replacesArtifacts: false
-          # ★ 关键：同名文件存在时覆盖，否则新编译的包永远传不上（旧文件被跳过）
-          overwrite: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ## 固件刷写指引
