@@ -201,16 +201,18 @@ mkdir -p "$MNT/etc/mobile-broadband" 2>/dev/null || true
 # ==========================================================================
 cat > "$MNT/etc/systemd/system/trim-wifi-guard.service" <<'WGEOF'
 [Unit]
-Description=WiFi guard: disable bcmdhd if wlan0 cannot come up
-After=local-fs.target trim_main.service network_service.service
-Wants=trim_main.service
+Description=WiFi guard: retry bcmdhd load if wlan0 missing (NEVER blacklist)
+After=NetworkManager.service
+Wants=NetworkManager.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-# 给 WiFi 60 秒尝试时间
-ExecStartPre=/bin/sleep 60
-ExecStart=/bin/bash -c 'if [ -d /sys/class/net/wlan0 ]; then st=$(cat /sys/class/net/wlan0/operstate 2>/dev/null); if [ "$st" = "up" ]; then echo "[wifi-guard] wlan0 正常 (up)，不干预"; else echo "[wifi-guard] wlan0 状态=$st，判定 WiFi 不可用，自动屏蔽 bcmdhd"; printf "install bcmdhd /bin/false\nblacklist bcmdhd\n" > /etc/modprobe.d/blacklist-bcmdhd.conf; ip link set wlan0 down 2>/dev/null; /sbin/rmmod bcmdhd 2>/dev/null; fi; else echo "[wifi-guard] 无 wlan0 设备，不干预"; fi; exit 0'
+# 注意：绝对不能再写 /etc/modprobe.d/blacklist-bcmdhd.conf
+# 之前那样做，一旦 WiFi 某次失败就永久屏蔽，之后再也不加载，
+# 导致 nmcli radio 显示 "WIFI-HW missing"，用户只能刷机才能恢复。
+# 现在只做一件事：清掉历史遗留的黑名单文件 + 尝试加载 bcmdhd。
+ExecStart=/bin/bash -c 'rm -f /etc/modprobe.d/blacklist-bcmdhd.conf /etc/modprobe.d/*bcmdhd*.conf 2>/dev/null; sleep 20; if [ ! -d /sys/class/net/wlan0 ]; then echo "[wifi-guard] 无 wlan0，尝试加载 bcmdhd"; /sbin/modprobe bcmdhd 2>/dev/null; sleep 8; fi; if [ -d /sys/class/net/wlan0 ]; then echo "[wifi-guard] wlan0 存在，operstate=$(cat /sys/class/net/wlan0/operstate 2>/dev/null)"; /usr/bin/nmcli radio wifi on 2>/dev/null; else echo "[wifi-guard] bcmdhd 加载失败（硬件或固件问题，不写黑名单）"; fi; exit 0'
 
 [Install]
 WantedBy=multi-user.target
