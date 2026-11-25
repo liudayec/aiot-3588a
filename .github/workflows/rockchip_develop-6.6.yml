@@ -1,4 +1,4 @@
-name: rockchip kernel develop-6.6
+﻿name: rockchip kernel develop-6.6
 
 on:
   repository_dispatch:
@@ -107,7 +107,8 @@ jobs:
           artifacts: /builder/release/*
           allowUpdates: true
           removeArtifacts: false
-          replacesArtifacts: true
+          # 2026-11-25 修复：原来 true，13 个 job 并发上传会互相清空，最后只剩 1 个包
+          replacesArtifacts: false
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ## 固件刷写指引
