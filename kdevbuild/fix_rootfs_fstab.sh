@@ -624,5 +624,42 @@ DROPEOF
 echo "[fix_rootfs] 已装 storage-release.sh + trim_file_monitor 启动顺序修正"
 
 
+
+# ==========================================================================
+# ⑱ /vol1 自愈（2026-11-26 加回，稳妥版）
+#
+# 背景：
+#   fnOS 创建存储空间时，mdadm/LVM/mkfs.btrfs 全部成功（日志已证实），
+#   但最后一步"挂载到 /vol1"有时没做成（依赖 trimafs 模块，我们内核没有），
+#   导致网页显示创建失败，/vol1 也没挂上。
+#
+# 本服务只做两件事，绝不创建/格式化任何东西：
+#   1. vgchange -ay      激活已存在的 LVM 卷组
+#   2. mount 挂到 /vol1  如果 /vol1 还没挂载且能找到 btrfs 的 LV
+#
+# 时序：After=trim_main.service（等 fnOS 先跑完创建流程）
+#       然后补上它没做完的挂载步骤
+# ==========================================================================
+cat > "$MNT/etc/systemd/system/trim-vol1-heal.service" <<'HEALEOF'
+[Unit]
+Description=Ensure /vol1 is mounted (activate LVM + mount existing btrfs LV)
+After=local-fs.target trim_main.service
+Wants=trim_main.service
+ConditionPathIsReadWrite=/
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# 只激活 + 挂载，绝不 mkfs / 绝不 mdadm create / 绝不 lvcreate
+ExecStart=/bin/bash -c 'mkdir -p /vol1; chmod 755 /vol1 2>/dev/null; /sbin/vgchange -ay >/dev/null 2>&1; if ! mountpoint -q /vol1; then for lv in /dev/mapper/trim_*-0; do if [ -e "$lv" ] && blkid "$lv" 2>/dev/null | grep -q btrfs; then mount "$lv" /vol1 2>/dev/null && break; fi; done; fi; if mountpoint -q /vol1; then for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do mkdir -p "/vol1/$d" 2>/dev/null; done; fi; exit 0'
+
+[Install]
+WantedBy=multi-user.target
+HEALEOF
+ln -sf ../trim-vol1-heal.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-vol1-heal.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-vol1-heal（只激活 LVM + 挂载 /vol1，不创建/格式化）"
+
+
 echo "[fix_rootfs] 全部完成"
 exit 0
