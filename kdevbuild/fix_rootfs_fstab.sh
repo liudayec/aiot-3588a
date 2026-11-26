@@ -150,20 +150,14 @@ echo "[fix_rootfs] 已安装 trim-4g-power.service"
 FW_SRC="$(cd "$(dirname "$0")" && pwd)/firmware"
 if [ -d "$FW_SRC" ]; then
   mkdir -p "$MNT/lib/firmware" 2>/dev/null || true
-  # 驱动实际请求的文件名（dmesg 实测）：
-  #   fw_bcm43456c5_ag.bin                 固件
-  #   clm_bcm43456c5_ag.blob               CLM（注意：不是 fw_*_ag.clm_blob）
-  #   nvram_ap6256.txt                     NVRAM
-  #   config.txt
+  # 2026-11-26：驱动 dmesg 实测请求的文件名是 clm_bcm43456c5_ag.blob
+  # （不是 fw_bcm43456c5_ag.clm_blob），两个名字都装一份保险。
   for pair in \
       "fw_bcmdhd.bin:fw_bcm43456c5_ag.bin" \
       "clm_blob.bin:clm_bcm43456c5_ag.blob" \
       "clm_blob.bin:fw_bcm43456c5_ag.clm_blob" \
       "nvram.txt:nvram_ap6256.txt" \
-      "config.txt:config.txt" \
-      "fw_bcmdhd.bin:brcmfmac43456-sdio.bin" \
-      "clm_blob.bin:brcmfmac43456-sdio.clm_blob" \
-      "nvram.txt:brcmfmac43456-sdio.txt"
+      "config.txt:config.txt"
   do
     src="${pair%%:*}"
     dst="${pair##*:}"
@@ -172,8 +166,6 @@ if [ -d "$FW_SRC" ]; then
       echo "[fix_rootfs] 已安装 /lib/firmware/$dst ($(stat -c%s "$FW_SRC/$src" 2>/dev/null) 字节)"
     fi
   done
-  # bcmdhd 有时直接读 /（相对 /lib/firmware/ 的绝对名），补一份到根
-  [ -f "$FW_SRC/clm_blob.bin" ] && cp -f "$FW_SRC/clm_blob.bin" "$MNT/lib/firmware/clm_bcm43456c5_ag.blob"
   chmod 644 "$MNT/lib/firmware/"* 2>/dev/null || true
 
   # 兼容旧路径
@@ -275,84 +267,19 @@ ln -sf /dev/null "$MNT/etc/systemd/system/ModemManager.service" 2>/dev/null || t
 echo "[fix_rootfs] 已 mask ModemManager（让 usb0 归 NetworkManager）"
 
 # --- ④ 4G usb0 静态 IP 服务（EC200A ECM 模式没有 DHCP）---
-cat > "$MNT/usr/local/sbin/trim-4g-ip.sh" <<'G4IPSH'
-#!/bin/bash
-# 给 usb0 拿运营商 IP（适配 NetworkManager / dhclient / udhcpc / dhcpcd）
-set +e
-
-has_ip() {
-    ip -4 addr show usb0 2>/dev/null | grep -q "inet "
-}
-
-# 已经有了就退出
-has_ip && exit 0
-
-i=0
-while [ $i -lt 40 ]; do
-    [ -d /sys/class/net/usb0 ] || { sleep 3; i=$((i+1)); continue; }
-
-    # ① NetworkManager（fnOS / 桌面发行版）
-    if command -v nmcli >/dev/null 2>&1; then
-        nmcli con up "4G-USB0" >/dev/null 2>&1
-        sleep 5
-        has_ip && { echo "[trim-4g-ip] nmcli 成功"; exit 0; }
-    fi
-
-    # ② dhclient（Debian / Ubuntu / CentOS 常见）
-    if command -v dhclient >/dev/null 2>&1; then
-        ip link set usb0 up 2>/dev/null
-        dhclient -1 -v usb0 >/dev/null 2>&1
-        sleep 2
-        has_ip && { echo "[trim-4g-ip] dhclient 成功"; exit 0; }
-    fi
-
-    # ③ udhcpc（busybox，openwrt 等）
-    if command -v udhcpc >/dev/null 2>&1; then
-        ip link set usb0 up 2>/dev/null
-        udhcpc -i usb0 -q -n -t 5 >/dev/null 2>&1
-        sleep 2
-        has_ip && { echo "[trim-4g-ip] udhcpc 成功"; exit 0; }
-    fi
-
-    # ④ dhcpcd（Arch / 树莓派 OS）
-    if command -v dhcpcd >/dev/null 2>&1; then
-        ip link set usb0 up 2>/dev/null
-        dhcpcd -1 -t 10 usb0 >/dev/null 2>&1
-        sleep 2
-        has_ip && { echo "[trim-4g-ip] dhcpcd 成功"; exit 0; }
-    fi
-
-    sleep 4
-    i=$((i+1))
-done
-
-if has_ip; then
-    echo "[trim-4g-ip] usb0 已拿到 IP: $(ip -4 addr show usb0 | grep inet | awk '{print $2}')"
-else
-    echo "[trim-4g-ip] 超时，usb0 未拿到 IP"
-fi
-exit 0
-G4IPSH
-chmod 755 "$MNT/usr/local/sbin/trim-4g-ip.sh" 2>/dev/null || true
-
 cat > "$MNT/etc/systemd/system/trim-4g-ip.service" <<'G4IPEOF'
 [Unit]
 Description=Bring up 4G usb0 via DHCP after QNETDEVCTL binding
-After=trim-4g-apn.service
-Wants=trim-4g-apn.service
+After=NetworkManager.service trim-4g-apn.service
+Wants=NetworkManager.service trim-4g-apn.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-# 顺序：trim-4g-apn 先跑完 AT+QNETDEVCTL=1,1,1（把 PDP 绑到 usb0）
-#       然后这里去要运营商 IP
-#
-# 2026-11-26 改：不再硬依赖 nmcli。
-#   fnOS / 桌面发行版  → NetworkManager（nmcli）
-#   Ubuntu Server 24.04 → systemd-networkd（不装 NM，nmcli 不存在）
-#   Debian / CentOS 等  → dhclient 或 dhcpcd
-#   所以依次尝试：nmcli → dhclient → udhcpc → dhcpcd
-ExecStart=/usr/local/sbin/trim-4g-ip.sh
+# 顺序很重要：
+#   trim-4g-apn 先跑完 AT+QNETDEVCTL=1,1,1（把 PDP 绑到 usb0）
+#   然后这里再拉一次 NM 连接，让 DHCP 去要运营商 IP
+ExecStart=/bin/bash -c 'i=0; while [ $i -lt 40 ]; do if ip -4 addr show usb0 2>/dev/null | grep -q "inet "; then exit 0; fi; if [ -d /sys/class/net/usb0 ]; then /usr/bin/nmcli con up "4G-USB0" 2>/dev/null; fi; sleep 4; i=$((i+1)); done; exit 0'
 
 [Install]
 WantedBy=multi-user.target
@@ -441,92 +368,79 @@ echo "[fix_rootfs] 已装 trim-nca9555-all.service（16 脚兜底）"
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/wan-failover.sh" <<'WANEOF'
 #!/bin/bash
-# WAN 自动选路（2026-11-26 改：兼容 NetworkManager 和 systemd-networkd）
-#
+# WAN 自动选路（2026-11-26 修正）
 # 三网口同时在线，自动选真正能访问外网的那条。
 # 某个口有 IP 但上不了外网时自动让位。
 #
-# 两种网络栈：
-#   NetworkManager    → nmcli con mod route-metric + con up 重新激活
-#   systemd-networkd  → ip route replace metric
-#   都没有          → 直接 ip route
+# ★ 关键修复：改了 route-metric 之后必须 nmcli con up 重新激活，
+#   否则路由表不会更新（之前只改配置，路由表永远停在旧 metric）。
 #
-# 轮询间隔 5 秒（trim-wan-failover.service 里控制）
+# ★ 注意：不要反复重启连接，只在 metric 真的变化时才重新激活，
+#   并且用 down + up 而不是 reload（reload 不一定刷新路由）。
 
 TEST_HOSTS="223.5.5.5 8.8.8.8"
+
+# 网口|连接名|可用时metric|不可用metric
 CAND_IFS=("wlan0" "usb0" "eth0")
 CAND_NAMES=("Xiaomi_8D9F_5G-wlan0" "4G-USB0" "Wired connection 1")
 GOOD_METRIC=50
 BAD_METRIC=600
 
-# 检测网络栈
-HAS_NM=0
-HAS_NETWORKD=0
-command -v nmcli >/dev/null 2>&1 && HAS_NM=1
-systemctl is-active --quiet systemd-networkd 2>/dev/null && HAS_NETWORKD=1
-
 net_ok() {
-    local ifc="$1" h
-    [ -d "/sys/class/net/$ifc" ] || return 1
-    ip -4 addr show "$ifc" 2>/dev/null | grep -q "inet " || return 1
-    for h in $TEST_HOSTS; do
-        ping -c 1 -W 2 -I "$ifc" "$h" >/dev/null 2>&1 && return 0
-    done
-    return 1
+  local ifc="$1" h
+  [ -d "/sys/class/net/$ifc" ] || return 1
+  ip -4 addr show "$ifc" 2>/dev/null | grep -q "inet " || return 1
+  for h in $TEST_HOSTS; do
+    ping -c 1 -W 2 -I "$ifc" "$h" >/dev/null 2>&1 && return 0
+  done
+  return 1
 }
 
 WINNER=""
 for i in 0 1 2; do
-    if net_ok "${CAND_IFS[$i]}"; then
-        WINNER="${CAND_IFS[$i]}"
-        break
-    fi
+  if net_ok "${CAND_IFS[$i]}"; then
+    WINNER="${CAND_IFS[$i]}"
+    break
+  fi
 done
 
-# 设置某个网口的 metric
-set_metric() {
-    local ifc="$1" name="$2" m="$3"
-    local cur=""
-
-    if [ "$HAS_NM" = "1" ]; then
-        cur=$(nmcli -g ipv4.route-metric con show "$name" 2>/dev/null)
-        if [ "$cur" != "$m" ]; then
-            nmcli con mod "$name" ipv4.route-metric "$m" 2>/dev/null
-            if nmcli -t -f DEVICE,STATE dev status 2>/dev/null | grep -q "^${ifc}:connected"; then
-                nmcli con down "$name" >/dev/null 2>&1
-                sleep 1
-                nmcli con up "$name" >/dev/null 2>&1
-                echo "[wan-failover] ${ifc} metric ${cur} -> ${m} (nmcli 重新激活)"
-            else
-                echo "[wan-failover] ${ifc} metric ${cur} -> ${m} (nmcli 仅改配置)"
-            fi
-        fi
-    else
-        # systemd-networkd 或无 NM：直接改路由表
-        local gw
-        gw=$(ip route show default dev "$ifc" 2>/dev/null | awk '{print $3}' | head -1)
-        if [ -n "$gw" ]; then
-            local have
-            have=$(ip route show default dev "$ifc" 2>/dev/null | grep -oP 'metric \K\d+' | head -1)
-            if [ "$have" != "$m" ]; then
-                ip route replace default via "$gw" dev "$ifc" metric "$m" 2>/dev/null
-                echo "[wan-failover] ${ifc} 路由 metric ${have:-无} -> ${m} (ip route)"
-            fi
-        fi
-    fi
-}
-
+CHANGED=0
 for i in 0 1 2; do
+  ifc="${CAND_IFS[$i]}"
+  name="${CAND_NAMES[$i]}"
+  if [ "$ifc" = "$WINNER" ]; then m=$GOOD_METRIC; else m=$BAD_METRIC; fi
+  cur=$(nmcli -g ipv4.route-metric con show "$name" 2>/dev/null)
+  if [ "$cur" != "$m" ]; then
+    nmcli con mod "$name" ipv4.route-metric "$m" 2>/dev/null \
+      && echo "[wan-failover] ${ifc} metric ${cur} -> ${m}"
+    CHANGED=$((CHANGED+1))
+    # 只有当前已激活的连接才需要重新激活
+    if nmcli -t -f DEVICE,STATE dev status 2>/dev/null | grep -q "^${ifc}:connected"; then
+      nmcli con down "$name" >/dev/null 2>&1
+      sleep 1
+      nmcli con up "$name" >/dev/null 2>&1 && echo "[wan-failover] ${ifc} 已重新激活"
+    fi
+  fi
+done
+
+# 如果没有任何变化，顺带确认路由表 metric 与配置一致
+if [ "$CHANGED" = "0" ]; then
+  for i in 0 1 2; do
     ifc="${CAND_IFS[$i]}"
     name="${CAND_NAMES[$i]}"
-    if [ "$ifc" = "$WINNER" ]; then
-        set_metric "$ifc" "$name" "$GOOD_METRIC"
-    else
-        set_metric "$ifc" "$name" "$BAD_METRIC"
+    want=$BAD_METRIC
+    [ "$ifc" = "$WINNER" ] && want=$GOOD_METRIC
+    have=$(ip route show default 2>/dev/null | grep "dev ${ifc}" | grep -oP 'metric \K\d+' | head -1)
+    if [ -n "$have" ] && [ "$have" != "$want" ]; then
+      echo "[wan-failover] ${ifc} 路由 metric=${have} 与配置 ${want} 不一致，重新激活"
+      nmcli con down "$name" >/dev/null 2>&1
+      sleep 1
+      nmcli con up "$name" >/dev/null 2>&1
     fi
-done
+  done
+fi
 
-echo "[wan-failover] winner=${WINNER:-none} nm=$HAS_NM networkd=$HAS_NETWORKD"
+echo "[wan-failover] winner=${WINNER:-none}"
 
 WANEOF
 chmod 755 "$MNT/usr/local/sbin/wan-failover.sh" 2>/dev/null || true
@@ -761,114 +675,51 @@ echo "[fix_rootfs] 已装 storage-release.sh + trim_file_monitor 启动顺序修
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/trim-vol1-heal.sh" <<'HEALSH_EOF'
 #!/bin/bash
-# 确保 /vol1 挂载着，但绝不干扰飞牛创建存储空间
-#
-# 2026-11-26 关键发现（板子实测）：
-#   飞牛创建存储空间的流程：
-#     umount -AR --force /dev/mmcblk0p5   ← 如果 /vol1 已挂载，这一步会失败
-#     mdadm --create /dev/md0
-#     vgcreate / lvcreate
-#     mkfs.btrfs
-#     mount /vol1
-#
-#   我们如果在飞牛创建前就挂载 /vol1，飞牛的 umount 就会失败，
-#   整个 [create] 返回 =>1，前端弹"系统内部错误"。
-#
-#   trim_main 日志实证：
-#     23:31:38 umount -AR --force /dev/mmcblk0p5  WEXITSTATUS=1
-#     23:31:38 umount ... 4 次全失败
-#     23:31:44 [create]=>1: mdadm
-#
-# 正确策略：
-#   ① 只在 LV 已经存在且有 btrfs 文件系统时，才尝试 mount
-#   ② 如果 LV 不存在（用户要创建新存储），什么都不做，让飞牛自己来
-#   ③ 如果 /vol1 已经挂载，保持不动
-#   ④ 如果飞牛正在创建（检测到 mdadm/vgcreate/lvcreate/mkfs 进程），暂停操作
-#
-# 绝不做：mdadm / pvcreate / vgcreate / lvcreate / mkfs / umount
-
 mkdir -p /vol1
 chmod 755 /vol1 2>/dev/null
 
-_log() { echo "[trim-vol1-heal] $*"; }
-
-# 飞牛是否正在操作存储
-_busy() {
-    pgrep -f 'mdadm|vgcreate|lvcreate|mkfs.btrfs|pvcreate' >/dev/null 2>&1 && return 0
-    pgrep -f '/usr/trim/bin/trim' >/dev/null 2>&1 && \
-        pgrep -f 'mountmgr|storage.hdl' >/dev/null 2>&1 && return 0
-    return 1
-}
-
-# LV 上是否有可挂载的 btrfs
-_has_btrfs() {
-    local lv="$1"
-    blkid "$lv" 2>/dev/null | grep -q 'TYPE="btrfs"' && return 0
-    return 1
-}
-
-_do_mount() {
-    local lv
+i=0
+while [ "$i" -lt 20 ]; do
+    if mountpoint -q /vol1; then
+        break
+    fi
+    /sbin/vgchange -ay >/dev/null 2>&1
     for lv in /dev/mapper/trim_*-0; do
         [ -e "$lv" ] || continue
-        # 只挂有 btrfs 的（飞牛 mkfs 完才有）
-        _has_btrfs "$lv" || continue
         if mount "$lv" /vol1 2>/dev/null; then
-            _log "mounted $lv"
-            local d
-            for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
-                mkdir -p "/vol1/$d" 2>/dev/null
-            done
-            return 0
+            echo "[trim-vol1-heal] mounted $lv"
+            break 2
         fi
     done
-    return 1
-}
-
-_log "启动（每 15 秒检查，飞牛操作期间暂停）"
-
-_mounted=0
-while true; do
-    # 飞牛正在动存储，别插手
-    if _busy; then
-        sleep 5
-        continue
-    fi
-
-    if mountpoint -q /vol1 2>/dev/null; then
-        if [ "$_mounted" = "0" ]; then
-            _log "/vol1 已挂载"
-            _mounted=1
-        fi
-    else
-        if [ "$_mounted" = "1" ]; then
-            _log "/vol1 丢失挂载，尝试重挂"
-            _mounted=0
-        fi
-        if _do_mount; then
-            _log "/vol1 ready"
-            _mounted=1
-        fi
-    fi
-    sleep 15
+    i=$((i + 1))
+    sleep 3
 done
 
+if mountpoint -q /vol1; then
+    for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
+        mkdir -p "/vol1/$d" 2>/dev/null
+    done
+    echo "[trim-vol1-heal] /vol1 ready"
+else
+    echo "[trim-vol1-heal] not mounted after 60s"
+fi
+
+exit 0
 HEALSH_EOF
 chmod 755 "$MNT/usr/local/sbin/trim-vol1-heal.sh" 2>/dev/null || true
 
 cat > "$MNT/etc/systemd/system/trim-vol1-heal.service" <<'HEALSVC_EOF'
 [Unit]
-Description=Keep /vol1 mounted (daemon, re-mount if lost)
+Description=Ensure /vol1 is mounted (activate LVM + mount existing btrfs LV)
 After=local-fs.target trim_main.service
 Wants=trim_main.service
 ConditionPathIsReadWrite=/
 
 [Service]
-# 常驻 daemon：每 10 秒检查一次 /vol1，丢了就重挂
-Type=simple
+Type=oneshot
+RemainAfterExit=yes
 ExecStart=/usr/local/sbin/trim-vol1-heal.sh
-Restart=always
-RestartSec=5
+TimeoutStartSec=120
 
 [Install]
 WantedBy=multi-user.target
@@ -1029,430 +880,6 @@ P5SVCEOF
 ln -sf ../trim-p5-heal.service "$MNT/etc/systemd/system/multi-user.target.wants/trim-p5-heal.service" 2>/dev/null || true
 echo "[fix_rootfs] 已装 trim-p5-heal（p5 分区丢失时自动重建）"
 
-
-# ==========================================================================
-# ㉑ NPU 用户态运行时（librknnrt + rknn_server）
-#
-# 背景：
-#   内核有 RKNPU 驱动（CONFIG_ROCKCHIP_RKNPU=y），但没有 librknnrt.so，
-#   跑不了任何 RKNN 模型。
-#   板子实测：
-#     RKNPU fdab0000.npu: [drm] Initialized rknpu 0.9.8
-#     devfreq 1GHz，8 档
-#     但 find / -iname '*rknn*' 为空
-#
-# 影响评估（不影响飞牛）：
-#   纯新增文件，飞牛不用 NPU 就不受影响。
-#   /usr/lib/librknnrt.so 和 /usr/bin/rknn_server 都是新文件。
-#
-# 注意：
-#   rknnlite 要求库在 /usr/lib/ 而不是 /usr/lib/aarch64-linux-gnu/
-#   （板子实测：放错位置报 "Can not find dynamic library on RK3588!"）
-# ==========================================================================
-cat > "$MNT/usr/local/sbin/trim-npu-install.sh" <<'NPUEOF'
-#!/bin/bash
-# 安装 RKNN 用户态运行时（首次启动时联网下载，失败不阻塞）
-set +e
-
-MARK=/var/lib/trim-npu-installed
-[ -f "$MARK" ] && exit 0
-
-LIB=/usr/lib/librknnrt.so
-SRV=/usr/bin/rknn_server
-
-# 已经有就跳过
-if [ -f "$LIB" ] && [ -f "$SRV" ]; then
-    touch "$MARK"
-    exit 0
-fi
-
-# 等网络就绪（最多 60 秒）
-i=0
-while [ $i -lt 30 ]; do
-    if ping -c 1 -W 2 223.5.5.5 >/dev/null 2>&1; then break; fi
-    i=$((i+1))
-    sleep 2
-done
-
-BASE="https://raw.githubusercontent.com/airockchip/rknn-toolkit2/master/rknpu2/runtime/Linux"
-
-if [ ! -f "$LIB" ]; then
-    # 只放到 /usr/lib/，rknnlite 只认这个路径
-    wget -q -O /tmp/librknnrt.so.$$ "$BASE/librknn_api/aarch64/librknnrt.so" 2>/dev/null
-    if [ -s /tmp/librknnrt.so.$$ ] && [ "$(stat -c%s /tmp/librknnrt.so.$$)" -gt 1000000 ]; then
-        install -m755 /tmp/librknnrt.so.$$ "$LIB"
-        echo "[trim-npu] librknnrt.so 已安装: $(stat -c%s $LIB) 字节"
-    else
-        echo "[trim-npu] librknnrt.so 下载失败"
-    fi
-    rm -f /tmp/librknnrt.so.$$
-fi
-
-if [ ! -f "$SRV" ]; then
-    wget -q -O /tmp/rknn_server.$$ "$BASE/rknn_server/aarch64/usr/bin/rknn_server" 2>/dev/null
-    if [ -s /tmp/rknn_server.$$ ] && [ "$(stat -c%s /tmp/rknn_server.$$)" -gt 100000 ]; then
-        install -m755 /tmp/rknn_server.$$ "$SRV"
-        echo "[trim-npu] rknn_server 已安装"
-    else
-        echo "[trim-npu] rknn_server 下载失败"
-    fi
-    rm -f /tmp/rknn_server.$$
-fi
-
-if [ -f "$LIB" ] && [ -f "$SRV" ]; then
-    ldconfig 2>/dev/null
-    touch "$MARK"
-    echo "[trim-npu] 安装完成"
-fi
-exit 0
-NPUEOF
-chmod 755 "$MNT/usr/local/sbin/trim-npu-install.sh" 2>/dev/null || true
-
-cat > "$MNT/etc/systemd/system/trim-npu-runtime.service" <<'NPUSVCEOF'
-[Unit]
-Description=Install RKNN userspace runtime (librknnrt + rknn_server)
-After=network-online.target
-Wants=network-online.target
-ConditionPathExists=!/var/lib/trim-npu-installed
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/usr/local/sbin/trim-npu-install.sh
-TimeoutStartSec=180
-StandardOutput=journal
-
-[Install]
-WantedBy=multi-user.target
-NPUSVCEOF
-ln -sf ../trim-npu-runtime.service \
-  "$MNT/etc/systemd/system/multi-user.target.wants/trim-npu-runtime.service" 2>/dev/null || true
-echo "[fix_rootfs] 已装 trim-npu-runtime（首次启动联网装 librknnrt + rknn_server）"
-
-# rknn_server 自启服务（供 PC 上的 rknn-toolkit2 远程调试用）
-# 板子上直接跑推理不需要它，但装上不影响，需要时直接可用
-cat > "$MNT/etc/systemd/system/trim-rknn-server.service" <<'RKSRVEOF'
-[Unit]
-Description=Rockchip RKNN remote server (for rknn-toolkit2 debug from PC)
-After=trim-npu-runtime.service
-Wants=trim-npu-runtime.service
-ConditionPathExists=/usr/bin/rknn_server
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/rknn_server
-Restart=on-failure
-RestartSec=10
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-RKSRVEOF
-ln -sf ../trim-rknn-server.service \
-  "$MNT/etc/systemd/system/multi-user.target.wants/trim-rknn-server.service" 2>/dev/null || true
-echo "[fix_rootfs] 已装 trim-rknn-server（rknn_server 自启，可选）"
-
-
-# ==========================================================================
-# ㉖ netplan 配置（Ubuntu / Debian 的 systemd-networkd 需要）
-#
-# 问题实证（Ubuntu 24.04 刷机后）：
-#   [FAILED] systemd-networkd-wait-online - Wait for Network to be Configured
-#   网口灯不亮，拿不到 IP
-#
-# 根因：
-#   Ubuntu Server 用 netplan 管理网络，只配置 netplan 里列出的接口。
-#   原厂镜像的 /etc/netplan/*.yaml 只有它自己板的接口名，
-#   我们的 eth0 / wlan0 / usb0 不在里面，networkd 就不管它们。
-#
-# 只对 Ubuntu / Debian 系生效（有 netplan 才写），其他系统自动跳过。
-# ==========================================================================
-if [ -d "$MNT/etc/netplan" ]; then
-cat > "$MNT/etc/netplan/99-kdev-network.yaml" <<'NETPLANEOF'
-# kdev: 确保板子的三个网口都被 systemd-networkd 管理
-network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    eth0:
-      dhcp4: true
-      dhcp4-overrides:
-        route-metric: 600
-      optional: true
-    usb0:
-      dhcp4: true
-      dhcp4-overrides:
-        route-metric: 100
-      optional: true
-  wifis:
-    wlan0:
-      dhcp4: true
-      dhcp4-overrides:
-        route-metric: 50
-      optional: true
-      access-points: {}
-NETPLANEOF
-chmod 600 "$MNT/etc/netplan/99-kdev-network.yaml"
-echo "[fix_rootfs] 已装 99-kdev-network.yaml（netplan 配置 eth0/usb0/wlan0）"
-
-# 同时把原来的 netplan 配置备份并清空（防止它把接口设成静态/禁用）
-for f in "$MNT"/etc/netplan/*.yaml; do
-    case "$f" in
-        *99-kdev-network.yaml) continue;;
-    esac
-    [ -f "$f" ] || continue
-    if grep -qE 'dhcp4:\s*false|addresses:' "$f" 2>/dev/null; then
-        mv "$f" "$f.kdevbak" 2>/dev/null || true
-        echo "[fix_rootfs] 已禁用原 netplan 配置: $(basename $f)"
-    fi
-done
-fi
-
-
-# ==========================================================================
-# ㉗ 其它网络栈适配（ifupdown / UCI）
-#
-# 已覆盖：
-#   NetworkManager  → fnOS / CentOS / Fedora / Rocky / armbian / Kali 等
-#   netplan         → Ubuntu（见 ㉖）
-#
-# 本段补：
-#   ifupdown        → Debian（/etc/network/interfaces.d/）
-#   UCI             → OpenWrt / iStoreOS（/etc/config/network）
-#
-# 判断方式：看系统用什么工具，不会互相干扰。
-# ==========================================================================
-
-# ① ifupdown（Debian 系非 netplan 模式）
-if [ -d "$MNT/etc/network" ] && [ ! -d "$MNT/etc/netplan" ]; then
-    mkdir -p "$MNT/etc/network/interfaces.d"
-    cat > "$MNT/etc/network/interfaces.d/kdev-ifupdown" <<'IFEOF'
-# kdev: 确保板子网口自动 DHCP
-auto lo
-iface lo inet loopback
-
-allow-hotplug eth0
-auto eth0
-iface eth0 inet dhcp
-    metric 600
-
-allow-hotplug usb0
-auto usb0
-iface usb0 inet dhcp
-    metric 100
-
-allow-hotplug wlan0
-auto wlan0
-iface wlan0 inet dhcp
-    metric 50
-IFEOF
-    chmod 644 "$MNT/etc/network/interfaces.d/kdev-ifupdown"
-    # 确保主配置文件会读 interfaces.d
-    if [ -f "$MNT/etc/network/interfaces" ]; then
-        if ! grep -q 'interfaces.d' "$MNT/etc/network/interfaces" 2>/dev/null; then
-            echo 'source /etc/network/interfaces.d/*' >> "$MNT/etc/network/interfaces"
-            echo "[fix_rootfs] 已在 /etc/network/interfaces 加 source 行"
-        fi
-    fi
-    echo "[fix_rootfs] 已装 ifupdown 配置（Debian）"
-fi
-
-# ② UCI（OpenWrt / iStoreOS）
-if [ -f "$MNT/etc/config/network" ]; then
-    # 检查是否已有 eth0 配置
-    if ! grep -qE "option +ifname +'eth0'" "$MNT/etc/config/network" 2>/dev/null \
-       && ! grep -qE 'option +device +.eth0.' "$MNT/etc/config/network" 2>/dev/null; then
-        cat >> "$MNT/etc/config/network" <<'UCIEOF'
-
-# kdev: 板子网口（追加）
-config interface 'kdeth0'
-	option proto 'dhcp'
-	option device 'eth0'
-	option metric '600'
-
-config interface 'kdusb0'
-	option proto 'dhcp'
-	option device 'usb0'
-	option metric '100'
-UCIEOF
-        echo "[fix_rootfs] 已追加 OpenWrt UCI 配置"
-    else
-        echo "[fix_rootfs] OpenWrt 已有 eth0 配置，跳过"
-    fi
-fi
-
-
-# ==========================================================================
-# ㉘ eth0 重试（关键：GMAC DMA 第一次初始化会失败）
-#
-# 问题实证（board 串口日志，所有系统都一样）：
-#   [15.78] rk_gmac-dwmac fe1c0000.ethernet: Failed to reset the dma
-#   [15.78] rk_gmac-dwmac fe1c0000.ethernet eth0: stmmac_hw_setup: DMA engine initialization failed
-#   [15.78] rk_gmac-dwmac fe1c0000.ethernet eth0: __stmmac_open: Hw setup failed
-#
-#   但 fnOS 上能看到后续日志：
-#   [19.20] rk_gmac-dwmac fe1c0000.ethernet: configuring for phy/rgmii-rxid link mode
-#   [19.83] rk_gmac-dwmac fe1c0000.ethernet eth0: Link is Up - 1Gbps/Full
-#
-#   原因：第一次 open 时 PHY/DMA 时序没就绪，失败；
-#        NetworkManager 自动重试，第二次就成功。
-#        Ubuntu 的 systemd-networkd 不重试，所以永远 DOWN。
-#
-# 方案：开机后自动把 eth0 down/up 若干次，直到 Link is Up。
-#       对所有系统生效（纯 ip 命令，不依赖网络栈）。
-# ==========================================================================
-cat > "$MNT/usr/local/sbin/trim-eth-retry.sh" <<'ETHRETRYEOF'
-#!/bin/bash
-# eth0 重试：只在确实没链路时才动，避免干扰飞牛
-#
-# 2026-11-26 改：
-#   原版无条件 down/up，会影响飞牛创建存储空间（需要网络稳定）
-#   现在：carrier=1 直接退出；只有 carrier=0 才尝试 up（不 down）
-
-DEV=eth0
-
-[ -d /sys/class/net/$DEV ] || exit 0
-
-carrier=$(cat /sys/class/net/$DEV/carrier 2>/dev/null || echo 0)
-state=$(cat /sys/class/net/$DEV/operstate 2>/dev/null || echo unknown)
-
-if [ "$carrier" = "1" ]; then
-    echo "[trim-eth-retry] $DEV 已连通 (state=$state carrier=$carrier)，无需操作"
-    exit 0
-fi
-
-echo "[trim-eth-retry] $DEV 无链路 (state=$state carrier=$carrier)，尝试拉起"
-
-ok=0
-for i in 1 2 3; do
-    carrier=$(cat /sys/class/net/$DEV/carrier 2>/dev/null || echo 0)
-    if [ "$carrier" = "1" ]; then
-        echo "[trim-eth-retry] 第 $i 次检查：已连通"
-        ok=1
-        break
-    fi
-    echo "[trim-eth-retry] 第 $i 次尝试：up $DEV（不 down，避免打断网络）"
-    ip link set "$DEV" up 2>/dev/null
-    sleep 8
-done
-
-if [ "$ok" = "0" ]; then
-    carrier=$(cat /sys/class/net/$DEV/carrier 2>/dev/null || echo 0)
-    state=$(cat /sys/class/net/$DEV/operstate 2>/dev/null || echo unknown)
-    if [ "$carrier" = "1" ]; then
-        echo "[trim-eth-retry] 最终已连通 (state=$state carrier=$carrier)"
-    else
-        echo "[trim-eth-retry] 重试 5 次仍未连通 (state=$state carrier=$carrier)"
-    fi
-fi
-
-# 顺便检查其他网口
-for d in usb0 wlan0; do
-    [ -d /sys/class/net/$d ] || continue
-    cs=$(cat /sys/class/net/$d/carrier 2>/dev/null || echo -)
-    st=$(cat /sys/class/net/$d/operstate 2>/dev/null || echo -)
-    echo "[trim-eth-retry] $d: state=$st carrier=$cs"
-done
-
-exit 0
-ETHRETRYEOF
-chmod 755 "$MNT/usr/local/sbin/trim-eth-retry.sh" 2>/dev/null || true
-
-cat > "$MNT/etc/systemd/system/trim-eth-retry.service" <<'ETHRETRYSVCEOF'
-[Unit]
-Description=Retry bringing up eth0 only if carrier is down
-# 2026-11-26：不要用 After=network.target 抢在飞牛前面动网络。
-# 飞牛 trim_main 创建存储空间时需要网络稳定，
-# 这里改成最后才跑，且只在 carrier=0 时才动。
-After=trim_main.service multi-user.target
-Wants=multi-user.target
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-# 等飞牛启动完（trim_main 会跑 30-60 秒）
-ExecStartPre=/bin/sleep 90
-ExecStart=/usr/local/sbin/trim-eth-retry.sh
-TimeoutStartSec=200
-
-[Install]
-WantedBy=multi-user.target
-ETHRETRYSVCEOF
-ln -sf ../trim-eth-retry.service \
-  "$MNT/etc/systemd/system/multi-user.target.wants/trim-eth-retry.service" 2>/dev/null || true
-echo "[fix_rootfs] 已装 trim-eth-retry（eth0 自动重试，修复 GMAC DMA 首次失败）"
-
-
-# ==========================================================================
-# ㉙ 无线工具探测（只读，不改 rootfs）
-#
-# 目的：确认各发行版 rootfs 里到底有没有 wpa_supplicant / iw / nmcli，
-#       决定下一步要不要在固件里补装。
-#
-# 检查内容：
-#   ① 二进制是否存在（多个常见路径）
-#   ② 包管理器类型（dpkg / rpm / opkg）
-#   ③ 网络管理栈（NetworkManager / netplan / ifupdown / UCI）
-# ==========================================================================
-echo "[probe-wifi] ================ 无线工具探测 ================"
-echo "[probe-wifi] vendor=${set_vendor} rootfs=${set_rootfs}"
-
-_wifi_probe() {
-    local name="$1"; shift
-    local found=""
-    for p in "$@"; do
-        if [ -e "$MNT$p" ]; then
-            found="$found $p"
-        fi
-    done
-    if [ -n "$found" ]; then
-        echo "[probe-wifi]   HAVE  ${name}:${found}"
-    else
-        echo "[probe-wifi]   MISS  ${name}"
-    fi
-}
-
-_wifi_probe wpa_supplicant /usr/sbin/wpa_supplicant /sbin/wpa_supplicant /usr/bin/wpa_supplicant
-_wifi_probe wpa_cli        /usr/sbin/wpa_cli /sbin/wpa_cli /usr/bin/wpa_cli
-_wifi_probe iw             /usr/sbin/iw /sbin/iw /usr/bin/iw
-_wifi_probe iwlist         /usr/sbin/iwlist /sbin/iwlist /usr/bin/iwlist
-_wifi_probe nmcli          /usr/bin/nmcli /usr/sbin/nmcli
-_wifi_probe hostapd        /usr/sbin/hostapd /usr/bin/hostapd
-_wifi_probe dnsmasq        /usr/sbin/dnsmasq /usr/bin/dnsmasq
-_wifi_probe udhcpc         /usr/sbin/udhcpc /sbin/udhcpc /usr/bin/udhcpc
-_wifi_probe dhclient       /usr/sbin/dhclient /sbin/dhclient /usr/bin/dhclient
-_wifi_probe busybox        /bin/busybox /usr/bin/busybox
-
-# 包管理器
-if [ -x "$MNT/usr/bin/dpkg" ] || [ -x "$MNT/bin/dpkg" ]; then
-    echo "[probe-wifi]   PKGMGR dpkg-deb"
-fi
-if [ -x "$MNT/usr/bin/rpm" ] || [ -x "$MNT/bin/rpm" ]; then
-    echo "[probe-wifi]   PKGMGR rpm"
-fi
-if [ -x "$MNT/bin/opkg" ] || [ -x "$MNT/usr/bin/opkg" ]; then
-    echo "[probe-wifi]   PKGMGR opkg"
-fi
-
-# 网络管理栈
-[ -d "$MNT/etc/NetworkManager" ]   && echo "[probe-wifi]   NETMGR NetworkManager"
-[ -d "$MNT/etc/netplan" ]          && echo "[probe-wifi]   NETMGR netplan"
-[ -f "$MNT/etc/network/interfaces" ] && echo "[probe-wifi]   NETMGR ifupdown"
-[ -f "$MNT/etc/config/network" ]   && echo "[probe-wifi]   NETMGR UCI(openwrt)"
-[ -d "$MNT/etc/systemd" ]          && echo "[probe-wifi]   NETMGR systemd"
-
-# bcmdhd 驱动
-if [ -d "$MNT/lib/modules" ]; then
-    _drv=$(find "$MNT/lib/modules" -maxdepth 3 -name 'bcmdhd.ko*' 2>/dev/null | head -1)
-    if [ -n "$_drv" ]; then
-        echo "[probe-wifi]   HAVE  bcmdhd.ko: ${_drv#$MNT}"
-    else
-        echo "[probe-wifi]   MISS  bcmdhd.ko（内核模块，非 http 目录）"
-    fi
-fi
-
-echo "[probe-wifi] ================ 探测结束 ================"
 
 echo "[fix_rootfs] 全部完成"
 exit 0
