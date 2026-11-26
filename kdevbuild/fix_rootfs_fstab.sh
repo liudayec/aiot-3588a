@@ -1314,5 +1314,75 @@ ln -sf ../trim-eth-retry.service \
 echo "[fix_rootfs] 已装 trim-eth-retry（eth0 自动重试，修复 GMAC DMA 首次失败）"
 
 
+# ==========================================================================
+# ㉙ 无线工具探测（只读，不改 rootfs）
+#
+# 目的：确认各发行版 rootfs 里到底有没有 wpa_supplicant / iw / nmcli，
+#       决定下一步要不要在固件里补装。
+#
+# 检查内容：
+#   ① 二进制是否存在（多个常见路径）
+#   ② 包管理器类型（dpkg / rpm / opkg）
+#   ③ 网络管理栈（NetworkManager / netplan / ifupdown / UCI）
+# ==========================================================================
+echo "[probe-wifi] ================ 无线工具探测 ================"
+echo "[probe-wifi] vendor=${set_vendor} rootfs=${set_rootfs}"
+
+_wifi_probe() {
+    local name="$1"; shift
+    local found=""
+    for p in "$@"; do
+        if [ -e "$MNT$p" ]; then
+            found="$found $p"
+        fi
+    done
+    if [ -n "$found" ]; then
+        echo "[probe-wifi]   HAVE  ${name}:${found}"
+    else
+        echo "[probe-wifi]   MISS  ${name}"
+    fi
+}
+
+_wifi_probe wpa_supplicant /usr/sbin/wpa_supplicant /sbin/wpa_supplicant /usr/bin/wpa_supplicant
+_wifi_probe wpa_cli        /usr/sbin/wpa_cli /sbin/wpa_cli /usr/bin/wpa_cli
+_wifi_probe iw             /usr/sbin/iw /sbin/iw /usr/bin/iw
+_wifi_probe iwlist         /usr/sbin/iwlist /sbin/iwlist /usr/bin/iwlist
+_wifi_probe nmcli          /usr/bin/nmcli /usr/sbin/nmcli
+_wifi_probe hostapd        /usr/sbin/hostapd /usr/bin/hostapd
+_wifi_probe dnsmasq        /usr/sbin/dnsmasq /usr/bin/dnsmasq
+_wifi_probe udhcpc         /usr/sbin/udhcpc /sbin/udhcpc /usr/bin/udhcpc
+_wifi_probe dhclient       /usr/sbin/dhclient /sbin/dhclient /usr/bin/dhclient
+_wifi_probe busybox        /bin/busybox /usr/bin/busybox
+
+# 包管理器
+if [ -x "$MNT/usr/bin/dpkg" ] || [ -x "$MNT/bin/dpkg" ]; then
+    echo "[probe-wifi]   PKGMGR dpkg-deb"
+fi
+if [ -x "$MNT/usr/bin/rpm" ] || [ -x "$MNT/bin/rpm" ]; then
+    echo "[probe-wifi]   PKGMGR rpm"
+fi
+if [ -x "$MNT/bin/opkg" ] || [ -x "$MNT/usr/bin/opkg" ]; then
+    echo "[probe-wifi]   PKGMGR opkg"
+fi
+
+# 网络管理栈
+[ -d "$MNT/etc/NetworkManager" ]   && echo "[probe-wifi]   NETMGR NetworkManager"
+[ -d "$MNT/etc/netplan" ]          && echo "[probe-wifi]   NETMGR netplan"
+[ -f "$MNT/etc/network/interfaces" ] && echo "[probe-wifi]   NETMGR ifupdown"
+[ -f "$MNT/etc/config/network" ]   && echo "[probe-wifi]   NETMGR UCI(openwrt)"
+[ -d "$MNT/etc/systemd" ]          && echo "[probe-wifi]   NETMGR systemd"
+
+# bcmdhd 驱动
+if [ -d "$MNT/lib/modules" ]; then
+    _drv=$(find "$MNT/lib/modules" -maxdepth 3 -name 'bcmdhd.ko*' 2>/dev/null | head -1)
+    if [ -n "$_drv" ]; then
+        echo "[probe-wifi]   HAVE  bcmdhd.ko: ${_drv#$MNT}"
+    else
+        echo "[probe-wifi]   MISS  bcmdhd.ko（内核模块，非 http 目录）"
+    fi
+fi
+
+echo "[probe-wifi] ================ 探测结束 ================"
+
 echo "[fix_rootfs] 全部完成"
 exit 0
