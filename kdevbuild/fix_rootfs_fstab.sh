@@ -761,35 +761,60 @@ echo "[fix_rootfs] 已装 storage-release.sh + trim_file_monitor 启动顺序修
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/trim-vol1-heal.sh" <<'HEALSH_EOF'
 #!/bin/bash
-# 确保 /vol1 一直挂载着
+# 确保 /vol1 挂载着，但绝不干扰飞牛创建存储空间
 #
-# 2026-11-26 改常驻：
-#   原来只跑一次（快等 60s + 慢等 60min），挂上就退出。
-#   但用户在 Web 界面删除存储再重建时，脚本已经退了，不会再挂。
+# 2026-11-26 关键发现（板子实测）：
+#   飞牛创建存储空间的流程：
+#     umount -AR --force /dev/mmcblk0p5   ← 如果 /vol1 已挂载，这一步会失败
+#     mdadm --create /dev/md0
+#     vgcreate / lvcreate
+#     mkfs.btrfs
+#     mount /vol1
 #
-#   现在改成常驻循环：
-#     每 10 秒检查一次 mountpoint /vol1
-#     没挂上就试 vgchange -ay + mount
-#     一直跑，永不退出（除非被 systemd 停掉）
+#   我们如果在飞牛创建前就挂载 /vol1，飞牛的 umount 就会失败，
+#   整个 [create] 返回 =>1，前端弹"系统内部错误"。
 #
-# 绝不做：mdadm create / pvcreate / vgcreate / lvcreate / mkfs
-# 只做：vgchange -ay + mount
+#   trim_main 日志实证：
+#     23:31:38 umount -AR --force /dev/mmcblk0p5  WEXITSTATUS=1
+#     23:31:38 umount ... 4 次全失败
+#     23:31:44 [create]=>1: mdadm
+#
+# 正确策略：
+#   ① 只在 LV 已经存在且有 btrfs 文件系统时，才尝试 mount
+#   ② 如果 LV 不存在（用户要创建新存储），什么都不做，让飞牛自己来
+#   ③ 如果 /vol1 已经挂载，保持不动
+#   ④ 如果飞牛正在创建（检测到 mdadm/vgcreate/lvcreate/mkfs 进程），暂停操作
+#
+# 绝不做：mdadm / pvcreate / vgcreate / lvcreate / mkfs / umount
 
 mkdir -p /vol1
 chmod 755 /vol1 2>/dev/null
 
-_log() {
-    echo "[trim-vol1-heal] $*"
+_log() { echo "[trim-vol1-heal] $*"; }
+
+# 飞牛是否正在操作存储
+_busy() {
+    pgrep -f 'mdadm|vgcreate|lvcreate|mkfs.btrfs|pvcreate' >/dev/null 2>&1 && return 0
+    pgrep -f '/usr/trim/bin/trim' >/dev/null 2>&1 && \
+        pgrep -f 'mountmgr|storage.hdl' >/dev/null 2>&1 && return 0
+    return 1
+}
+
+# LV 上是否有可挂载的 btrfs
+_has_btrfs() {
+    local lv="$1"
+    blkid "$lv" 2>/dev/null | grep -q 'TYPE="btrfs"' && return 0
+    return 1
 }
 
 _do_mount() {
-    /sbin/vgchange -ay >/dev/null 2>&1
     local lv
     for lv in /dev/mapper/trim_*-0; do
         [ -e "$lv" ] || continue
+        # 只挂有 btrfs 的（飞牛 mkfs 完才有）
+        _has_btrfs "$lv" || continue
         if mount "$lv" /vol1 2>/dev/null; then
             _log "mounted $lv"
-            # 建飞牛需要的目录
             local d
             for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
                 mkdir -p "/vol1/$d" 2>/dev/null
@@ -800,8 +825,16 @@ _do_mount() {
     return 1
 }
 
+_log "启动（每 15 秒检查，飞牛操作期间暂停）"
+
 _mounted=0
 while true; do
+    # 飞牛正在动存储，别插手
+    if _busy; then
+        sleep 5
+        continue
+    fi
+
     if mountpoint -q /vol1 2>/dev/null; then
         if [ "$_mounted" = "0" ]; then
             _log "/vol1 已挂载"
@@ -817,7 +850,7 @@ while true; do
             _mounted=1
         fi
     fi
-    sleep 10
+    sleep 15
 done
 
 HEALSH_EOF
