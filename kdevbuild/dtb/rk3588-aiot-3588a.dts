@@ -5703,8 +5703,8 @@
 		interrupt-names = "macirq\0eth_wake_irq";
 		rockchip,grf = <0xbf>;
 		rockchip,php_grf = <0x6f>;
-		clocks = <0x02 0x144 0x02 0x145 0x02 0x168 0x02 0x16d 0x02 0x143 0x02 0x144 0x02 0x144 0x02 0x144>;
-		clock-names = "stmmaceth\0clk_mac_ref\0pclk_mac\0aclk_mac\0ptp_ref\0mac_clk_rx\0mac_clk_tx\0clk_mac_speed";
+		clocks = <0x02 0x144 0x02 0x145 0x02 0x168 0x02 0x16d 0x02 0x143>;
+		clock-names = "stmmaceth\0clk_mac_ref\0pclk_mac\0aclk_mac\0ptp_ref";
 		resets = <0x02 0x20b>;
 		reset-names = "stmmaceth";
 		power-domains = <0x06 0x21>;
@@ -5718,8 +5718,7 @@
 		phy-mode = "rgmii-rxid";
 		tx_delay = <0x43>;
 		phy-handle = <0x106>;
-		local-mac-address = [00 e0 4c 68 00 01];
-		pinctrl-names = "default";
+				pinctrl-names = "default";
 		pinctrl-0 = <0x107 0x108 0x109 0x10a 0x10b>;
 		snps,reset-gpio = <0x10c 0x0f 0x01>;
 		snps,reset-active-low;
@@ -5734,8 +5733,6 @@
 			phy@1 {
 				compatible = "ethernet-phy-ieee802.3-c22";
 				reg = <0x01>;
-				motorcomm,led0-triggers = "activity";
-				motorcomm,led1-triggers = "link-10\0link-100\0link-1000";
 				phandle = <0x106>;
 			};
 		};

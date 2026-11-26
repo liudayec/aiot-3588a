@@ -264,19 +264,84 @@ ln -sf /dev/null "$MNT/etc/systemd/system/ModemManager.service" 2>/dev/null || t
 echo "[fix_rootfs] 已 mask ModemManager（让 usb0 归 NetworkManager）"
 
 # --- ④ 4G usb0 静态 IP 服务（EC200A ECM 模式没有 DHCP）---
+cat > "$MNT/usr/local/sbin/trim-4g-ip.sh" <<'G4IPSH'
+#!/bin/bash
+# 给 usb0 拿运营商 IP（适配 NetworkManager / dhclient / udhcpc / dhcpcd）
+set +e
+
+has_ip() {
+    ip -4 addr show usb0 2>/dev/null | grep -q "inet "
+}
+
+# 已经有了就退出
+has_ip && exit 0
+
+i=0
+while [ $i -lt 40 ]; do
+    [ -d /sys/class/net/usb0 ] || { sleep 3; i=$((i+1)); continue; }
+
+    # ① NetworkManager（fnOS / 桌面发行版）
+    if command -v nmcli >/dev/null 2>&1; then
+        nmcli con up "4G-USB0" >/dev/null 2>&1
+        sleep 5
+        has_ip && { echo "[trim-4g-ip] nmcli 成功"; exit 0; }
+    fi
+
+    # ② dhclient（Debian / Ubuntu / CentOS 常见）
+    if command -v dhclient >/dev/null 2>&1; then
+        ip link set usb0 up 2>/dev/null
+        dhclient -1 -v usb0 >/dev/null 2>&1
+        sleep 2
+        has_ip && { echo "[trim-4g-ip] dhclient 成功"; exit 0; }
+    fi
+
+    # ③ udhcpc（busybox，openwrt 等）
+    if command -v udhcpc >/dev/null 2>&1; then
+        ip link set usb0 up 2>/dev/null
+        udhcpc -i usb0 -q -n -t 5 >/dev/null 2>&1
+        sleep 2
+        has_ip && { echo "[trim-4g-ip] udhcpc 成功"; exit 0; }
+    fi
+
+    # ④ dhcpcd（Arch / 树莓派 OS）
+    if command -v dhcpcd >/dev/null 2>&1; then
+        ip link set usb0 up 2>/dev/null
+        dhcpcd -1 -t 10 usb0 >/dev/null 2>&1
+        sleep 2
+        has_ip && { echo "[trim-4g-ip] dhcpcd 成功"; exit 0; }
+    fi
+
+    sleep 4
+    i=$((i+1))
+done
+
+if has_ip; then
+    echo "[trim-4g-ip] usb0 已拿到 IP: $(ip -4 addr show usb0 | grep inet | awk '{print $2}')"
+else
+    echo "[trim-4g-ip] 超时，usb0 未拿到 IP"
+fi
+exit 0
+G4IPSH
+chmod 755 "$MNT/usr/local/sbin/trim-4g-ip.sh" 2>/dev/null || true
+
 cat > "$MNT/etc/systemd/system/trim-4g-ip.service" <<'G4IPEOF'
 [Unit]
 Description=Bring up 4G usb0 via DHCP after QNETDEVCTL binding
-After=NetworkManager.service trim-4g-apn.service
-Wants=NetworkManager.service trim-4g-apn.service
+After=trim-4g-apn.service
+Wants=trim-4g-apn.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-# 顺序很重要：
-#   trim-4g-apn 先跑完 AT+QNETDEVCTL=1,1,1（把 PDP 绑到 usb0）
-#   然后这里再拉一次 NM 连接，让 DHCP 去要运营商 IP
-ExecStart=/bin/bash -c 'i=0; while [ $i -lt 40 ]; do if ip -4 addr show usb0 2>/dev/null | grep -q "inet "; then exit 0; fi; if [ -d /sys/class/net/usb0 ]; then /usr/bin/nmcli con up "4G-USB0" 2>/dev/null; fi; sleep 4; i=$((i+1)); done; exit 0'
+# 顺序：trim-4g-apn 先跑完 AT+QNETDEVCTL=1,1,1（把 PDP 绑到 usb0）
+#       然后这里去要运营商 IP
+#
+# 2026-11-26 改：不再硬依赖 nmcli。
+#   fnOS / 桌面发行版  → NetworkManager（nmcli）
+#   Ubuntu Server 24.04 → systemd-networkd（不装 NM，nmcli 不存在）
+#   Debian / CentOS 等  → dhclient 或 dhcpcd
+#   所以依次尝试：nmcli → dhclient → udhcpc → dhcpcd
+ExecStart=/usr/local/sbin/trim-4g-ip.sh
 
 [Install]
 WantedBy=multi-user.target
@@ -365,79 +430,92 @@ echo "[fix_rootfs] 已装 trim-nca9555-all.service（16 脚兜底）"
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/wan-failover.sh" <<'WANEOF'
 #!/bin/bash
-# WAN 自动选路（2026-11-26 修正）
+# WAN 自动选路（2026-11-26 改：兼容 NetworkManager 和 systemd-networkd）
+#
 # 三网口同时在线，自动选真正能访问外网的那条。
 # 某个口有 IP 但上不了外网时自动让位。
 #
-# ★ 关键修复：改了 route-metric 之后必须 nmcli con up 重新激活，
-#   否则路由表不会更新（之前只改配置，路由表永远停在旧 metric）。
+# 两种网络栈：
+#   NetworkManager    → nmcli con mod route-metric + con up 重新激活
+#   systemd-networkd  → ip route replace metric
+#   都没有          → 直接 ip route
 #
-# ★ 注意：不要反复重启连接，只在 metric 真的变化时才重新激活，
-#   并且用 down + up 而不是 reload（reload 不一定刷新路由）。
+# 轮询间隔 5 秒（trim-wan-failover.service 里控制）
 
 TEST_HOSTS="223.5.5.5 8.8.8.8"
-
-# 网口|连接名|可用时metric|不可用metric
 CAND_IFS=("wlan0" "usb0" "eth0")
 CAND_NAMES=("Xiaomi_8D9F_5G-wlan0" "4G-USB0" "Wired connection 1")
 GOOD_METRIC=50
 BAD_METRIC=600
 
+# 检测网络栈
+HAS_NM=0
+HAS_NETWORKD=0
+command -v nmcli >/dev/null 2>&1 && HAS_NM=1
+systemctl is-active --quiet systemd-networkd 2>/dev/null && HAS_NETWORKD=1
+
 net_ok() {
-  local ifc="$1" h
-  [ -d "/sys/class/net/$ifc" ] || return 1
-  ip -4 addr show "$ifc" 2>/dev/null | grep -q "inet " || return 1
-  for h in $TEST_HOSTS; do
-    ping -c 1 -W 2 -I "$ifc" "$h" >/dev/null 2>&1 && return 0
-  done
-  return 1
+    local ifc="$1" h
+    [ -d "/sys/class/net/$ifc" ] || return 1
+    ip -4 addr show "$ifc" 2>/dev/null | grep -q "inet " || return 1
+    for h in $TEST_HOSTS; do
+        ping -c 1 -W 2 -I "$ifc" "$h" >/dev/null 2>&1 && return 0
+    done
+    return 1
 }
 
 WINNER=""
 for i in 0 1 2; do
-  if net_ok "${CAND_IFS[$i]}"; then
-    WINNER="${CAND_IFS[$i]}"
-    break
-  fi
-done
-
-CHANGED=0
-for i in 0 1 2; do
-  ifc="${CAND_IFS[$i]}"
-  name="${CAND_NAMES[$i]}"
-  if [ "$ifc" = "$WINNER" ]; then m=$GOOD_METRIC; else m=$BAD_METRIC; fi
-  cur=$(nmcli -g ipv4.route-metric con show "$name" 2>/dev/null)
-  if [ "$cur" != "$m" ]; then
-    nmcli con mod "$name" ipv4.route-metric "$m" 2>/dev/null \
-      && echo "[wan-failover] ${ifc} metric ${cur} -> ${m}"
-    CHANGED=$((CHANGED+1))
-    # 只有当前已激活的连接才需要重新激活
-    if nmcli -t -f DEVICE,STATE dev status 2>/dev/null | grep -q "^${ifc}:connected"; then
-      nmcli con down "$name" >/dev/null 2>&1
-      sleep 1
-      nmcli con up "$name" >/dev/null 2>&1 && echo "[wan-failover] ${ifc} 已重新激活"
+    if net_ok "${CAND_IFS[$i]}"; then
+        WINNER="${CAND_IFS[$i]}"
+        break
     fi
-  fi
 done
 
-# 如果没有任何变化，顺带确认路由表 metric 与配置一致
-if [ "$CHANGED" = "0" ]; then
-  for i in 0 1 2; do
+# 设置某个网口的 metric
+set_metric() {
+    local ifc="$1" name="$2" m="$3"
+    local cur=""
+
+    if [ "$HAS_NM" = "1" ]; then
+        cur=$(nmcli -g ipv4.route-metric con show "$name" 2>/dev/null)
+        if [ "$cur" != "$m" ]; then
+            nmcli con mod "$name" ipv4.route-metric "$m" 2>/dev/null
+            if nmcli -t -f DEVICE,STATE dev status 2>/dev/null | grep -q "^${ifc}:connected"; then
+                nmcli con down "$name" >/dev/null 2>&1
+                sleep 1
+                nmcli con up "$name" >/dev/null 2>&1
+                echo "[wan-failover] ${ifc} metric ${cur} -> ${m} (nmcli 重新激活)"
+            else
+                echo "[wan-failover] ${ifc} metric ${cur} -> ${m} (nmcli 仅改配置)"
+            fi
+        fi
+    else
+        # systemd-networkd 或无 NM：直接改路由表
+        local gw
+        gw=$(ip route show default dev "$ifc" 2>/dev/null | awk '{print $3}' | head -1)
+        if [ -n "$gw" ]; then
+            local have
+            have=$(ip route show default dev "$ifc" 2>/dev/null | grep -oP 'metric \K\d+' | head -1)
+            if [ "$have" != "$m" ]; then
+                ip route replace default via "$gw" dev "$ifc" metric "$m" 2>/dev/null
+                echo "[wan-failover] ${ifc} 路由 metric ${have:-无} -> ${m} (ip route)"
+            fi
+        fi
+    fi
+}
+
+for i in 0 1 2; do
     ifc="${CAND_IFS[$i]}"
     name="${CAND_NAMES[$i]}"
-    want=$BAD_METRIC
-    [ "$ifc" = "$WINNER" ] && want=$GOOD_METRIC
-    have=$(ip route show default 2>/dev/null | grep "dev ${ifc}" | grep -oP 'metric \K\d+' | head -1)
-    if [ -n "$have" ] && [ "$have" != "$want" ]; then
-      echo "[wan-failover] ${ifc} 路由 metric=${have} 与配置 ${want} 不一致，重新激活"
-      nmcli con down "$name" >/dev/null 2>&1
-      sleep 1
-      nmcli con up "$name" >/dev/null 2>&1
+    if [ "$ifc" = "$WINNER" ]; then
+        set_metric "$ifc" "$name" "$GOOD_METRIC"
+    else
+        set_metric "$ifc" "$name" "$BAD_METRIC"
     fi
-  done
-fi
+done
 
-echo "[wan-failover] winner=${WINNER:-none}"
+echo "[wan-failover] winner=${WINNER:-none} nm=$HAS_NM networkd=$HAS_NETWORKD"
 
 WANEOF
 chmod 755 "$MNT/usr/local/sbin/wan-failover.sh" 2>/dev/null || true
@@ -876,6 +954,186 @@ WantedBy=multi-user.target
 P5SVCEOF
 ln -sf ../trim-p5-heal.service "$MNT/etc/systemd/system/multi-user.target.wants/trim-p5-heal.service" 2>/dev/null || true
 echo "[fix_rootfs] 已装 trim-p5-heal（p5 分区丢失时自动重建）"
+
+
+# ==========================================================================
+# ㉑ NPU 用户态运行时（librknnrt + rknn_server）
+#
+# 背景：
+#   内核有 RKNPU 驱动（CONFIG_ROCKCHIP_RKNPU=y），但没有 librknnrt.so，
+#   跑不了任何 RKNN 模型。
+#   板子实测：
+#     RKNPU fdab0000.npu: [drm] Initialized rknpu 0.9.8
+#     devfreq 1GHz，8 档
+#     但 find / -iname '*rknn*' 为空
+#
+# 影响评估（不影响飞牛）：
+#   纯新增文件，飞牛不用 NPU 就不受影响。
+#   /usr/lib/librknnrt.so 和 /usr/bin/rknn_server 都是新文件。
+#
+# 注意：
+#   rknnlite 要求库在 /usr/lib/ 而不是 /usr/lib/aarch64-linux-gnu/
+#   （板子实测：放错位置报 "Can not find dynamic library on RK3588!"）
+# ==========================================================================
+cat > "$MNT/usr/local/sbin/trim-npu-install.sh" <<'NPUEOF'
+#!/bin/bash
+# 安装 RKNN 用户态运行时（首次启动时联网下载，失败不阻塞）
+set +e
+
+MARK=/var/lib/trim-npu-installed
+[ -f "$MARK" ] && exit 0
+
+LIB=/usr/lib/librknnrt.so
+SRV=/usr/bin/rknn_server
+
+# 已经有就跳过
+if [ -f "$LIB" ] && [ -f "$SRV" ]; then
+    touch "$MARK"
+    exit 0
+fi
+
+# 等网络就绪（最多 60 秒）
+i=0
+while [ $i -lt 30 ]; do
+    if ping -c 1 -W 2 223.5.5.5 >/dev/null 2>&1; then break; fi
+    i=$((i+1))
+    sleep 2
+done
+
+BASE="https://raw.githubusercontent.com/airockchip/rknn-toolkit2/master/rknpu2/runtime/Linux"
+
+if [ ! -f "$LIB" ]; then
+    # 只放到 /usr/lib/，rknnlite 只认这个路径
+    wget -q -O /tmp/librknnrt.so.$$ "$BASE/librknn_api/aarch64/librknnrt.so" 2>/dev/null
+    if [ -s /tmp/librknnrt.so.$$ ] && [ "$(stat -c%s /tmp/librknnrt.so.$$)" -gt 1000000 ]; then
+        install -m755 /tmp/librknnrt.so.$$ "$LIB"
+        echo "[trim-npu] librknnrt.so 已安装: $(stat -c%s $LIB) 字节"
+    else
+        echo "[trim-npu] librknnrt.so 下载失败"
+    fi
+    rm -f /tmp/librknnrt.so.$$
+fi
+
+if [ ! -f "$SRV" ]; then
+    wget -q -O /tmp/rknn_server.$$ "$BASE/rknn_server/aarch64/usr/bin/rknn_server" 2>/dev/null
+    if [ -s /tmp/rknn_server.$$ ] && [ "$(stat -c%s /tmp/rknn_server.$$)" -gt 100000 ]; then
+        install -m755 /tmp/rknn_server.$$ "$SRV"
+        echo "[trim-npu] rknn_server 已安装"
+    else
+        echo "[trim-npu] rknn_server 下载失败"
+    fi
+    rm -f /tmp/rknn_server.$$
+fi
+
+if [ -f "$LIB" ] && [ -f "$SRV" ]; then
+    ldconfig 2>/dev/null
+    touch "$MARK"
+    echo "[trim-npu] 安装完成"
+fi
+exit 0
+NPUEOF
+chmod 755 "$MNT/usr/local/sbin/trim-npu-install.sh" 2>/dev/null || true
+
+cat > "$MNT/etc/systemd/system/trim-npu-runtime.service" <<'NPUSVCEOF'
+[Unit]
+Description=Install RKNN userspace runtime (librknnrt + rknn_server)
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/trim-npu-installed
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/trim-npu-install.sh
+TimeoutStartSec=180
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
+NPUSVCEOF
+ln -sf ../trim-npu-runtime.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-npu-runtime.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-npu-runtime（首次启动联网装 librknnrt + rknn_server）"
+
+# rknn_server 自启服务（供 PC 上的 rknn-toolkit2 远程调试用）
+# 板子上直接跑推理不需要它，但装上不影响，需要时直接可用
+cat > "$MNT/etc/systemd/system/trim-rknn-server.service" <<'RKSRVEOF'
+[Unit]
+Description=Rockchip RKNN remote server (for rknn-toolkit2 debug from PC)
+After=trim-npu-runtime.service
+Wants=trim-npu-runtime.service
+ConditionPathExists=/usr/bin/rknn_server
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/rknn_server
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+RKSRVEOF
+ln -sf ../trim-rknn-server.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-rknn-server.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-rknn-server（rknn_server 自启，可选）"
+
+
+# ==========================================================================
+# ㉖ netplan 配置（Ubuntu / Debian 的 systemd-networkd 需要）
+#
+# 问题实证（Ubuntu 24.04 刷机后）：
+#   [FAILED] systemd-networkd-wait-online - Wait for Network to be Configured
+#   网口灯不亮，拿不到 IP
+#
+# 根因：
+#   Ubuntu Server 用 netplan 管理网络，只配置 netplan 里列出的接口。
+#   原厂镜像的 /etc/netplan/*.yaml 只有它自己板的接口名，
+#   我们的 eth0 / wlan0 / usb0 不在里面，networkd 就不管它们。
+#
+# 只对 Ubuntu / Debian 系生效（有 netplan 才写），其他系统自动跳过。
+# ==========================================================================
+if [ -d "$MNT/etc/netplan" ]; then
+cat > "$MNT/etc/netplan/99-kdev-network.yaml" <<'NETPLANEOF'
+# kdev: 确保板子的三个网口都被 systemd-networkd 管理
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 600
+      optional: true
+    usb0:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 100
+      optional: true
+  wifis:
+    wlan0:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 50
+      optional: true
+      access-points: {}
+NETPLANEOF
+chmod 600 "$MNT/etc/netplan/99-kdev-network.yaml"
+echo "[fix_rootfs] 已装 99-kdev-network.yaml（netplan 配置 eth0/usb0/wlan0）"
+
+# 同时把原来的 netplan 配置备份并清空（防止它把接口设成静态/禁用）
+for f in "$MNT"/etc/netplan/*.yaml; do
+    case "$f" in
+        *99-kdev-network.yaml) continue;;
+    esac
+    [ -f "$f" ] || continue
+    if grep -qE 'dhcp4:\s*false|addresses:' "$f" 2>/dev/null; then
+        mv "$f" "$f.kdevbak" 2>/dev/null || true
+        echo "[fix_rootfs] 已禁用原 netplan 配置: $(basename $f)"
+    fi
+done
+fi
 
 
 echo "[fix_rootfs] 全部完成"

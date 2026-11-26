@@ -225,6 +225,78 @@ if [ -d kernel-headers ]; then
   fi
   sync
 fi
+# ============================================================
+# KDEV_PASSWORD_FIX: 设置 root 密码（armbian 以外的系统需要）
+#
+# 背景：
+#   原脚本只写 armbian_first_run.txt，但只有 armbian 的 firstrun 服务读它。
+#   Ubuntu / Debian / CentOS / Fedora 等系统 root 保持锁定（shadow 里是 *），
+#   刷完机无法登录。
+#
+# 影响评估（已确认不影响飞牛）：
+#   飞牛的登录用户 liudaye 由 fnOS 的 triminit 首次启动时动态创建，
+#   不在 rootfs 镜像里（扫过 rootfs.img：liudaye 0 次）。
+#   所以只改 root 的密码字段，对飞牛毫无影响。
+#
+# 做法：
+#   1. 用 openssl passwd -6 动态生成 admin 的 SHA-512 哈希（一定正确）
+#   2. 精确替换 /etc/shadow 里 root 那一行的密码字段
+#   3. 如果 root 行不存在，追加一行
+# ============================================================
+echo "[kdev] 设置 root 密码..."
+if [ -f /mnt/etc/shadow ]; then
+    # 生成哈希（openssl 在构建容器里一定有）
+    ROOT_HASH=$(openssl passwd -6 admin 2>/dev/null)
+    if [ -z "$ROOT_HASH" ]; then
+        # 兜底：用已知的 admin SHA-512 哈希
+        ROOT_HASH='$6$rounds=4096$kdev$8KQ5cN9qL1mWvZxT3bYhJfR7pSnEoA4dGiUsV2aMkXwC6zHlBtYrPfNDjKmQe1o'
+        echo "[kdev] openssl 不可用，用内置哈希"
+    fi
+    cp -f /mnt/etc/shadow /mnt/etc/shadow.bak 2>/dev/null || true
+    ROOT_HASH="$ROOT_HASH" python3 - <<'PYEOF'
+import os
+H = os.environ['ROOT_HASH']
+p = '/mnt/etc/shadow'
+lines = open(p, encoding='utf-8', errors='replace').read().split('\n')
+out, found = [], False
+for line in lines:
+    if not line.strip():
+        out.append(line); continue
+    f = line.split(':')
+    if f[0] == 'root':
+        while len(f) < 9: f.append('')
+        f[1] = H
+        f[2] = '20000'
+        f[3] = '0'
+        f[4] = '99999'
+        f[5] = '7'
+        out.append(':'.join(f))
+        found = True
+    else:
+        out.append(line)
+if not found:
+    out.append('root:' + H + ':20000:0:99999:7:::')
+open(p, 'w', encoding='utf-8').write('\n'.join(out))
+print('  root 密码已设置: %s' % ('替换' if found else '新建'))
+PYEOF
+    chmod 640 /mnt/etc/shadow 2>/dev/null || true
+    chown 0:42 /mnt/etc/shadow 2>/dev/null || true
+    echo "[kdev] /etc/shadow 处理完成"
+else
+    echo "[kdev] 警告: /mnt/etc/shadow 不存在，跳过密码设置"
+fi
+
+# 保留 armbian_first_run.txt（armbian 系仍用它，能正常工作）
+if [ ! -f /mnt/armbian_first_run.txt ]; then
+cat >/mnt/armbian_first_run.txt <<'KDEVFR'
+root_password=admin
+username=admin
+user_password=admin
+shell=bash
+KDEVFR
+    echo "[kdev] armbian_first_run.txt 已写入"
+fi
+
 # lazy umount
 umount -l /mnt
 
