@@ -761,25 +761,55 @@ echo "[fix_rootfs] 已装 storage-release.sh + trim_file_monitor 启动顺序修
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/trim-vol1-heal.sh" <<'HEALSH_EOF'
 #!/bin/bash
+# 确保 /vol1 挂载好（激活 LVM + 挂现有 btrfs LV）
+#
+# 绝不做：mdadm create / pvcreate / vgcreate / lvcreate / mkfs
+# 只做：vgchange -ay + mount
+#
+# 2026-11-26 实证（飞牛首次创建存储空间）：
+#   trim-vol1-heal 在 23:02:03 启动
+#   用户的 LV 在 23:06:26 才创建（晚了 4 分钟）
+#   原来的 20 次 × 3s = 60 秒等不够 → 报 not mounted after 60s
+#
+# 现在改成两级：
+#   ① 快等：20 次 × 3s = 60 秒（覆盖正常重启场景）
+#   ② 慢等：再 180 次 × 20s = 60 分钟（覆盖用户手动创建存储空间场景）
+#      一旦挂上就退出，不占 CPU（每次只 sleep）
 mkdir -p /vol1
 chmod 755 /vol1 2>/dev/null
 
-i=0
-while [ "$i" -lt 20 ]; do
-    if mountpoint -q /vol1; then
-        break
-    fi
+_do_mount() {
     /sbin/vgchange -ay >/dev/null 2>&1
     for lv in /dev/mapper/trim_*-0; do
         [ -e "$lv" ] || continue
         if mount "$lv" /vol1 2>/dev/null; then
             echo "[trim-vol1-heal] mounted $lv"
-            break 2
+            return 0
         fi
     done
+    return 1
+}
+
+# ① 快等 60 秒
+i=0
+while [ "$i" -lt 20 ]; do
+    mountpoint -q /vol1 && break
+    _do_mount && break
     i=$((i + 1))
     sleep 3
 done
+
+# ② 慢等 60 分钟（用户手动创建存储空间时，LV 可能几分钟后才出现）
+if ! mountpoint -q /vol1; then
+    echo "[trim-vol1-heal] 快等结束未挂载，转入慢等（最多 60 分钟）"
+    j=0
+    while [ "$j" -lt 180 ]; do
+        mountpoint -q /vol1 && break
+        _do_mount && break
+        j=$((j + 1))
+        sleep 20
+    done
+fi
 
 if mountpoint -q /vol1; then
     for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
@@ -787,7 +817,7 @@ if mountpoint -q /vol1; then
     done
     echo "[trim-vol1-heal] /vol1 ready"
 else
-    echo "[trim-vol1-heal] not mounted after 60s"
+    echo "[trim-vol1-heal] 仍未挂载（LV 可能还不存在，等待用户创建存储空间）"
 fi
 
 exit 0
