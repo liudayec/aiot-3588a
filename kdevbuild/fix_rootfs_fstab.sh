@@ -1136,5 +1136,78 @@ done
 fi
 
 
+# ==========================================================================
+# ㉗ 其它网络栈适配（ifupdown / UCI）
+#
+# 已覆盖：
+#   NetworkManager  → fnOS / CentOS / Fedora / Rocky / armbian / Kali 等
+#   netplan         → Ubuntu（见 ㉖）
+#
+# 本段补：
+#   ifupdown        → Debian（/etc/network/interfaces.d/）
+#   UCI             → OpenWrt / iStoreOS（/etc/config/network）
+#
+# 判断方式：看系统用什么工具，不会互相干扰。
+# ==========================================================================
+
+# ① ifupdown（Debian 系非 netplan 模式）
+if [ -d "$MNT/etc/network" ] && [ ! -d "$MNT/etc/netplan" ]; then
+    mkdir -p "$MNT/etc/network/interfaces.d"
+    cat > "$MNT/etc/network/interfaces.d/kdev-ifupdown" <<'IFEOF'
+# kdev: 确保板子网口自动 DHCP
+auto lo
+iface lo inet loopback
+
+allow-hotplug eth0
+auto eth0
+iface eth0 inet dhcp
+    metric 600
+
+allow-hotplug usb0
+auto usb0
+iface usb0 inet dhcp
+    metric 100
+
+allow-hotplug wlan0
+auto wlan0
+iface wlan0 inet dhcp
+    metric 50
+IFEOF
+    chmod 644 "$MNT/etc/network/interfaces.d/kdev-ifupdown"
+    # 确保主配置文件会读 interfaces.d
+    if [ -f "$MNT/etc/network/interfaces" ]; then
+        if ! grep -q 'interfaces.d' "$MNT/etc/network/interfaces" 2>/dev/null; then
+            echo 'source /etc/network/interfaces.d/*' >> "$MNT/etc/network/interfaces"
+            echo "[fix_rootfs] 已在 /etc/network/interfaces 加 source 行"
+        fi
+    fi
+    echo "[fix_rootfs] 已装 ifupdown 配置（Debian）"
+fi
+
+# ② UCI（OpenWrt / iStoreOS）
+if [ -f "$MNT/etc/config/network" ]; then
+    # 检查是否已有 eth0 配置
+    if ! grep -qE "option +ifname +'eth0'" "$MNT/etc/config/network" 2>/dev/null \
+       && ! grep -qE 'option +device +.eth0.' "$MNT/etc/config/network" 2>/dev/null; then
+        cat >> "$MNT/etc/config/network" <<'UCIEOF'
+
+# kdev: 板子网口（追加）
+config interface 'kdeth0'
+	option proto 'dhcp'
+	option device 'eth0'
+	option metric '600'
+
+config interface 'kdusb0'
+	option proto 'dhcp'
+	option device 'usb0'
+	option metric '100'
+UCIEOF
+        echo "[fix_rootfs] 已追加 OpenWrt UCI 配置"
+    else
+        echo "[fix_rootfs] OpenWrt 已有 eth0 配置，跳过"
+    fi
+fi
+
+
 echo "[fix_rootfs] 全部完成"
 exit 0
