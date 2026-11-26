@@ -835,7 +835,9 @@ ConditionPathIsReadWrite=/
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/local/sbin/trim-vol1-heal.sh
-TimeoutStartSec=120
+# 慢等 180 次 x 20s = 3600 秒，加上快等 60 秒，必须给足 3700 秒，
+# 否则 systemd 会在 120 秒时强杀脚本，慢等根本跑不到。
+TimeoutStartSec=3700
 
 [Install]
 WantedBy=multi-user.target
