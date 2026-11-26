@@ -150,11 +150,20 @@ echo "[fix_rootfs] 已安装 trim-4g-power.service"
 FW_SRC="$(cd "$(dirname "$0")" && pwd)/firmware"
 if [ -d "$FW_SRC" ]; then
   mkdir -p "$MNT/lib/firmware" 2>/dev/null || true
+  # 驱动实际请求的文件名（dmesg 实测）：
+  #   fw_bcm43456c5_ag.bin                 固件
+  #   clm_bcm43456c5_ag.blob               CLM（注意：不是 fw_*_ag.clm_blob）
+  #   nvram_ap6256.txt                     NVRAM
+  #   config.txt
   for pair in \
       "fw_bcmdhd.bin:fw_bcm43456c5_ag.bin" \
+      "clm_blob.bin:clm_bcm43456c5_ag.blob" \
       "clm_blob.bin:fw_bcm43456c5_ag.clm_blob" \
       "nvram.txt:nvram_ap6256.txt" \
-      "config.txt:config.txt"
+      "config.txt:config.txt" \
+      "fw_bcmdhd.bin:brcmfmac43456-sdio.bin" \
+      "clm_blob.bin:brcmfmac43456-sdio.clm_blob" \
+      "nvram.txt:brcmfmac43456-sdio.txt"
   do
     src="${pair%%:*}"
     dst="${pair##*:}"
@@ -163,6 +172,8 @@ if [ -d "$FW_SRC" ]; then
       echo "[fix_rootfs] 已安装 /lib/firmware/$dst ($(stat -c%s "$FW_SRC/$src" 2>/dev/null) 字节)"
     fi
   done
+  # bcmdhd 有时直接读 /（相对 /lib/firmware/ 的绝对名），补一份到根
+  [ -f "$FW_SRC/clm_blob.bin" ] && cp -f "$FW_SRC/clm_blob.bin" "$MNT/lib/firmware/clm_bcm43456c5_ag.blob"
   chmod 644 "$MNT/lib/firmware/"* 2>/dev/null || true
 
   # 兼容旧路径
