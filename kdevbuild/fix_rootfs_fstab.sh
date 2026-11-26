@@ -761,83 +761,81 @@ echo "[fix_rootfs] 已装 storage-release.sh + trim_file_monitor 启动顺序修
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/trim-vol1-heal.sh" <<'HEALSH_EOF'
 #!/bin/bash
-# 确保 /vol1 挂载好（激活 LVM + 挂现有 btrfs LV）
+# 确保 /vol1 一直挂载着
+#
+# 2026-11-26 改常驻：
+#   原来只跑一次（快等 60s + 慢等 60min），挂上就退出。
+#   但用户在 Web 界面删除存储再重建时，脚本已经退了，不会再挂。
+#
+#   现在改成常驻循环：
+#     每 10 秒检查一次 mountpoint /vol1
+#     没挂上就试 vgchange -ay + mount
+#     一直跑，永不退出（除非被 systemd 停掉）
 #
 # 绝不做：mdadm create / pvcreate / vgcreate / lvcreate / mkfs
 # 只做：vgchange -ay + mount
-#
-# 2026-11-26 实证（飞牛首次创建存储空间）：
-#   trim-vol1-heal 在 23:02:03 启动
-#   用户的 LV 在 23:06:26 才创建（晚了 4 分钟）
-#   原来的 20 次 × 3s = 60 秒等不够 → 报 not mounted after 60s
-#
-# 现在改成两级：
-#   ① 快等：20 次 × 3s = 60 秒（覆盖正常重启场景）
-#   ② 慢等：再 180 次 × 20s = 60 分钟（覆盖用户手动创建存储空间场景）
-#      一旦挂上就退出，不占 CPU（每次只 sleep）
+
 mkdir -p /vol1
 chmod 755 /vol1 2>/dev/null
 
+_log() {
+    echo "[trim-vol1-heal] $*"
+}
+
 _do_mount() {
     /sbin/vgchange -ay >/dev/null 2>&1
+    local lv
     for lv in /dev/mapper/trim_*-0; do
         [ -e "$lv" ] || continue
         if mount "$lv" /vol1 2>/dev/null; then
-            echo "[trim-vol1-heal] mounted $lv"
+            _log "mounted $lv"
+            # 建飞牛需要的目录
+            local d
+            for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
+                mkdir -p "/vol1/$d" 2>/dev/null
+            done
             return 0
         fi
     done
     return 1
 }
 
-# ① 快等 60 秒
-i=0
-while [ "$i" -lt 20 ]; do
-    mountpoint -q /vol1 && break
-    _do_mount && break
-    i=$((i + 1))
-    sleep 3
+_mounted=0
+while true; do
+    if mountpoint -q /vol1 2>/dev/null; then
+        if [ "$_mounted" = "0" ]; then
+            _log "/vol1 已挂载"
+            _mounted=1
+        fi
+    else
+        if [ "$_mounted" = "1" ]; then
+            _log "/vol1 丢失挂载，尝试重挂"
+            _mounted=0
+        fi
+        if _do_mount; then
+            _log "/vol1 ready"
+            _mounted=1
+        fi
+    fi
+    sleep 10
 done
 
-# ② 慢等 60 分钟（用户手动创建存储空间时，LV 可能几分钟后才出现）
-if ! mountpoint -q /vol1; then
-    echo "[trim-vol1-heal] 快等结束未挂载，转入慢等（最多 60 分钟）"
-    j=0
-    while [ "$j" -lt 180 ]; do
-        mountpoint -q /vol1 && break
-        _do_mount && break
-        j=$((j + 1))
-        sleep 20
-    done
-fi
-
-if mountpoint -q /vol1; then
-    for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
-        mkdir -p "/vol1/$d" 2>/dev/null
-    done
-    echo "[trim-vol1-heal] /vol1 ready"
-else
-    echo "[trim-vol1-heal] 仍未挂载（LV 可能还不存在，等待用户创建存储空间）"
-fi
-
-exit 0
 HEALSH_EOF
 chmod 755 "$MNT/usr/local/sbin/trim-vol1-heal.sh" 2>/dev/null || true
 
 cat > "$MNT/etc/systemd/system/trim-vol1-heal.service" <<'HEALSVC_EOF'
 [Unit]
-Description=Ensure /vol1 is mounted (activate LVM + mount existing btrfs LV)
+Description=Keep /vol1 mounted (daemon, re-mount if lost)
 After=local-fs.target trim_main.service
 Wants=trim_main.service
 ConditionPathIsReadWrite=/
 
 [Service]
-Type=oneshot
-RemainAfterExit=yes
+# 常驻 daemon：每 10 秒检查一次 /vol1，丢了就重挂
+Type=simple
 ExecStart=/usr/local/sbin/trim-vol1-heal.sh
-# 慢等 180 次 x 20s = 3600 秒，加上快等 60 秒，必须给足 3700 秒，
-# 否则 systemd 会在 120 秒时强杀脚本，慢等根本跑不到。
-TimeoutStartSec=3700
+Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
