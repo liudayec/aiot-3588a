@@ -1273,32 +1273,37 @@ fi
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/trim-eth-retry.sh" <<'ETHRETRYEOF'
 #!/bin/bash
-# eth0 重试：解决 GMAC DMA 第一次初始化失败
-# 最多重试 5 次，每次 down/up 后检查 carrier
+# eth0 重试：只在确实没链路时才动，避免干扰飞牛
+#
+# 2026-11-26 改：
+#   原版无条件 down/up，会影响飞牛创建存储空间（需要网络稳定）
+#   现在：carrier=1 直接退出；只有 carrier=0 才尝试 up（不 down）
 
 DEV=eth0
 
 [ -d /sys/class/net/$DEV ] || exit 0
 
-echo "[trim-eth-retry] 开始修复 $DEV"
+carrier=$(cat /sys/class/net/$DEV/carrier 2>/dev/null || echo 0)
+state=$(cat /sys/class/net/$DEV/operstate 2>/dev/null || echo unknown)
+
+if [ "$carrier" = "1" ]; then
+    echo "[trim-eth-retry] $DEV 已连通 (state=$state carrier=$carrier)，无需操作"
+    exit 0
+fi
+
+echo "[trim-eth-retry] $DEV 无链路 (state=$state carrier=$carrier)，尝试拉起"
 
 ok=0
-for i in 1 2 3 4 5; do
-    # 检查 carrier（1 = 有链路）
+for i in 1 2 3; do
     carrier=$(cat /sys/class/net/$DEV/carrier 2>/dev/null || echo 0)
-    state=$(cat /sys/class/net/$DEV/operstate 2>/dev/null || echo unknown)
-
-    if [ "$carrier" = "1" ] && [ "$state" = "up" ]; then
-        echo "[trim-eth-retry] 第 $i 次检查：已连通 (state=$state carrier=$carrier)"
+    if [ "$carrier" = "1" ]; then
+        echo "[trim-eth-retry] 第 $i 次检查：已连通"
         ok=1
         break
     fi
-
-    echo "[trim-eth-retry] 第 $i 次尝试：down/up $DEV (之前 state=$state carrier=$carrier)"
-    ip link set "$DEV" down 2>/dev/null
-    sleep 2
+    echo "[trim-eth-retry] 第 $i 次尝试：up $DEV（不 down，避免打断网络）"
     ip link set "$DEV" up 2>/dev/null
-    sleep 5
+    sleep 8
 done
 
 if [ "$ok" = "0" ]; then
@@ -1325,18 +1330,20 @@ chmod 755 "$MNT/usr/local/sbin/trim-eth-retry.sh" 2>/dev/null || true
 
 cat > "$MNT/etc/systemd/system/trim-eth-retry.service" <<'ETHRETRYSVCEOF'
 [Unit]
-Description=Retry bringing up eth0 (GMAC DMA first init often fails)
-After=network.target systemd-networkd.service NetworkManager.service
-Wants=network.target
+Description=Retry bringing up eth0 only if carrier is down
+# 2026-11-26：不要用 After=network.target 抢在飞牛前面动网络。
+# 飞牛 trim_main 创建存储空间时需要网络稳定，
+# 这里改成最后才跑，且只在 carrier=0 时才动。
+After=trim_main.service multi-user.target
+Wants=multi-user.target
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStartPre=/bin/sleep 20
+# 等飞牛启动完（trim_main 会跑 30-60 秒）
+ExecStartPre=/bin/sleep 90
 ExecStart=/usr/local/sbin/trim-eth-retry.sh
-# 再等 60 秒后检查一次
-ExecStartPost=/bin/bash -c 'sleep 60; test "$(cat /sys/class/net/eth0/carrier 2>/dev/null)" = "1" || /usr/local/sbin/trim-eth-retry.sh'
-TimeoutStartSec=300
+TimeoutStartSec=200
 
 [Install]
 WantedBy=multi-user.target
