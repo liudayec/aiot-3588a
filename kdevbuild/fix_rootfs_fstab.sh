@@ -700,18 +700,18 @@ network:
     eth0:
       dhcp4: true
       dhcp4-overrides:
-        route-metric: 600
+        route-metric: 50
       optional: true
     usb0:
       dhcp4: true
       dhcp4-overrides:
-        route-metric: 100
+        route-metric: 600
       optional: true
   wifis:
     wlan0:
       dhcp4: true
       dhcp4-overrides:
-        route-metric: 50
+        route-metric: 100
       optional: true
       access-points: {}
 NETPLANEOF
@@ -791,12 +791,12 @@ if [ -f "$MNT/etc/config/network" ]; then
 config interface 'kdeth0'
 	option proto 'dhcp'
 	option device 'eth0'
-	option metric '600'
+	option metric '50'
 
 config interface 'kdusb0'
 	option proto 'dhcp'
 	option device 'usb0'
-	option metric '100'
+	option metric '600'
 UCIEOF
         echo "[fix_rootfs] 已追加 OpenWrt UCI 配置"
     else
@@ -976,6 +976,146 @@ P5SVCEOF
 ln -sf ../trim-fix-p5-flag.service \
   "$MNT/etc/systemd/system/sysinit.target.wants/trim-fix-p5-flag.service" 2>/dev/null || true
 echo "[fix_rootfs] 已装 trim-fix-p5-flag（去掉 data 分区的 raid GPT 标志）"
+
+
+
+# ==========================================================================
+# ㉑ /volN 挂载点管理 + 兜底挂载
+#
+# 板子实测完整结论（2026-11-27，两轮反汇编 + LD_PRELOAD 钩子）：
+#
+# ① fnOS 的 is_mountpoint(p) 实现（/usr/trim/lib/libnfile.so:0x3690）：
+#       return faccessat(AT_FDCWD, p, F_OK, flags) != 0;
+#    语义反了：路径"不存在"时返回 true。
+#
+# ② storage.hdl 的 stor_create()：
+#       sprintf(buf, "/vol%u", vol_id);
+#       if (is_mountpoint(buf, 0)) {        // 目录不存在 → true
+#           errno = 0x30008;                // E_MOUNTPOINT_EXISTS
+#           return -1;                      // 前端"挂载点已存在"
+#       }
+#       ... mount(...)                      ← 但这步飞牛实际不执行
+#   所以 /volN 目录必须先存在，飞牛才肯创建。
+#
+# ③ 但飞牛 mkfs + INSERT INTO mount 之后，就不再 mount /volN 了
+#    （因为 triminit 的 mount_storage() 在
+#      `mount -t trimafs trimafs /fs` 失败后提前退出了，
+#      而 trimafs 是飞牛自研文件系统，内核里没有这个模块）。
+#
+# ④ 手动 mount /volN 之后，飞牛会自己继续完成后续：
+#    建子卷 1000、建 @appcenter 等、建 thumb。界面显示正常。
+#
+# 所以本服务做两件事：
+#   A. 开机预建 /vol1 - /vol9 目录（绝不挂载）
+#   B. 循环检测：数据库 mount 表里有 id=N 的记录 + 对应 LV 有 btrfs
+#      + 飞牛没有存储操作进程 → mount /volN
+#
+# 绝不：mdadm / pvcreate / vgcreate / lvcreate / mkfs / umount
+# ==========================================================================
+cat > "$MNT/usr/local/sbin/trim-vol-heal.sh" <<'VOLHEALEOF'
+#!/bin/bash
+# /volN 目录预建 + 兜底挂载
+set -u
+
+_log() { echo "[trim-vol-heal] $*"; }
+
+# ---------- A. 预建目录（只建目录，绝不挂载） ----------
+for _i in 1 2 3 4 5 6 7 8 9; do
+    [ -d "/vol$_i" ] || mkdir -p "/vol$_i" 2>/dev/null
+done
+_log "已预建 /vol1 - /vol9"
+
+# ---------- 工具函数 ----------
+_busy() {
+    local n
+    n=$(pgrep -af 'mdadm|vgcreate|lvcreate|mkfs\.btrfs|pvcreate|wipefs' 2>/dev/null \
+        | grep -vE 'mdadm --monitor|pgrep|grep|trim-vol-heal' | wc -l)
+    [ "$n" -gt 0 ] && return 0
+    return 1
+}
+
+_has_btrfs() { blkid "$1" 2>/dev/null | grep -q 'TYPE="btrfs"'; }
+
+# 数据库里该卷对应的 LV 设备路径（uuid 形如 trim_xxx-0）
+_lv_of_vid() {
+    local vid="$1" uuid base
+    uuid=$(su - postgres -c "psql -d trim -tAc \"SELECT uuid FROM mount WHERE id=$vid\"" 2>/dev/null | tr -d ' \n')
+    [ -z "$uuid" ] && return 1
+    base="${uuid%-0}"
+    [ -e "/dev/mapper/${base}" ] && { echo "/dev/mapper/${base}"; return 0; }
+    [ -e "/dev/mapper/${uuid}" ] && { echo "/dev/mapper/${uuid}"; return 0; }
+    return 1
+}
+
+_ensure_appdirs() {
+    local mp="$1" d
+    mountpoint -q "$mp" 2>/dev/null || return 0
+    for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
+        [ -d "$mp/$d" ] || mkdir -p "$mp/$d" 2>/dev/null
+    done
+}
+
+_try_mount() {
+    local vid="$1" mp="/vol$vid" lv
+    mountpoint -q "$mp" 2>/dev/null && return 0
+    lv=$(_lv_of_vid "$vid") || return 1
+    [ -e "$lv" ] || return 1
+    _has_btrfs "$lv" || return 1
+    if mount "$lv" "$mp" 2>/dev/null; then
+        _log "mounted $lv -> $mp"
+        return 0
+    fi
+    return 1
+}
+
+# ---------- B. 主循环 ----------
+# 开机先等 triminit / trim_main 起来
+sleep 45
+_log "开始循环（每 5 秒检查一次）"
+
+_quiet=0
+while true; do
+    if _busy; then
+        _quiet=0
+    else
+        _quiet=$((_quiet + 1))
+        # 连续 3 轮（15 秒）飞牛没动作，才去挂
+        if [ "$_quiet" -ge 3 ]; then
+            for _v in 1 2 3 4 5 6 7 8 9; do
+                if mountpoint -q "/vol$_v" 2>/dev/null; then
+                    _ensure_appdirs "/vol$_v"
+                else
+                    _try_mount "$_v"
+                fi
+            done
+            _quiet=0
+        fi
+    fi
+    sleep 5
+done
+VOLHEALEOF
+chmod 755 "$MNT/usr/local/sbin/trim-vol-heal.sh" 2>/dev/null || true
+
+cat > "$MNT/etc/systemd/system/trim-vol-heal.service" <<'VOLSVCEOF'
+[Unit]
+Description=Pre-create /volN mountpoints and mount them if fnOS did not
+After=postgresql.service trim_main.service
+Wants=postgresql.service
+ConditionPathExists=/usr/trim/bin/trim
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/trim-vol-heal.sh
+Restart=always
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+VOLSVCEOF
+ln -sf ../trim-vol-heal.service \
+  "$MNT/etc/systemd/system/multi-user.target.wants/trim-vol-heal.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-vol-heal（预建 /volN + 兜底挂载）"
 
 
 echo "[fix_rootfs] 全部完成"
