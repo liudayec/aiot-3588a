@@ -1,4 +1,44 @@
 #!/bin/bash
+#!/bin/bash
+# 预建 fnOS 存储挂载点目录 —— 关键！绝不挂载
+#
+# 2026-11-27 找到真正根因（板子实测 + LD_PRELOAD 钩子 + 反汇编）：
+#
+#   fnOS 的 is_mountpoint() 真实实现（/usr/trim/lib/libnfile.so）：
+#       bool is_mountpoint(const char *p, int flags) {
+#           return faccessat(AT_FDCWD, p, F_OK, flags) != 0;
+#       }
+#   语义是反的：路径"不存在"时返回 true。
+#
+#   storage.hdl 的 stor_create() 里：
+#       sprintf(buf, "/vol%u", vol_id);
+#       if (is_mountpoint(buf, 0)) {     // 路径不存在 → true
+#           errno = 0x30008;             // E_MOUNTPOINT_EXISTS
+#           return -1;                   // → "挂载点已存在"
+#       }
+#
+#   所以：/vol1 目录必须先存在，飞牛才会继续 mount。
+#
+#   而本该创建它的 triminit 的 create_storage_mountpoint()
+#   因为 trimafs（飞牛自研文件系统，内核没这个模块）挂载失败
+#   提前退出了，压根没走到。
+#
+# 结论：开机预建 /vol1 目录（空目录，不挂载）。
+#   飞牛创建存储时会自己 mount 上去。
+#
+# LD_PRELOAD 钩子实测：
+#   faccessat(-21581, /vol1, 0, 0) = -1   （目录不存在）
+#   → is_mountpoint 返回 true → 报"挂载点已存在"
+#   建好目录后：
+#   faccessat(-21581, /vol1, 0, 0) = 0    （目录存在）
+#   → is_mountpoint 返回 false → 正常创建
+#
+# 板子验证：建好 /vol1 后创建存储一次成功。
+
+mkdir -p /vol1
+chmod 755 /vol1
+echo "[fix_rootfs] 已预建 /vol1 挂载点目录"
+
 # ==========================================================================
 # fix_rootfs_fstab.sh —— 刷机时修正 rootfs 的 fstab 并安装板子侧修复服务
 #
