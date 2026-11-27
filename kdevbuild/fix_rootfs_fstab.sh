@@ -904,5 +904,79 @@ if [ -L "$MNT/usr/bin/zpool" ] || [ -f "$MNT/usr/bin/zpool" ]; then
 fi
 
 
+
+# ==========================================================================
+# ⑳ 修正 data 分区（mmcblk0p5）的 GPT 标志
+#
+# 问题实证（板子实测）：
+#   fnOS 创建存储空间时反复失败：
+#     mdadm: Couldn't open /dev/mmcblk0p5 for write - not zeroing
+#     wipefs: /dev/mmcblk0p5: probing initialization failed: Device or resource busy
+#     [ERROR] erase superblock: /dev/mmcblk0p5
+#
+#   根因：mmcblk0p5 的 GPT 属性位带了 "raid" 标记，
+#   内核把它当成 RAID 成员（linux_raid_member），
+#   开机时 mdadm 自动组装成 md0/md1 抢占设备，
+#   飞牛再想 --create / --zero-superblock 就拿不到独占写权限。
+#
+#   手动 parted /dev/mmcblk0 --script set 5 raid off 之后，
+#   网页"创建存储空间"一次成功。
+#
+# 本服务：开机时把 p5 的 raid 标志去掉（只动标志位，不碰数据）。
+#   若 md 已经把 p5 抢走，先 stop 掉再改标志，之后不重启它。
+# ==========================================================================
+cat > "$MNT/usr/local/sbin/trim-fix-p5-flag.sh" <<'P5FLAGEOF'
+#!/bin/bash
+# 去掉 data 分区（mmcblk0p5）的 GPT raid 标志
+# 只动 GPT 属性位，不动分区内容
+set -u
+
+DEV=/dev/mmcblk0
+PART=5
+
+[ -b "${DEV}p${PART}" ] || exit 0
+
+# 当前标志
+cur=$(parted "$DEV" --script print 2>/dev/null | awk -v p="$PART" '$1==p {print $NF}')
+case "$cur" in
+    raid) ;;
+    *) exit 0 ;;   # 已经没有 raid 标志，什么都不做
+esac
+
+# 先把可能被 md 抢走的设备放开
+for m in /dev/md*; do
+    [ -b "$m" ] || continue
+    if mdadm --detail "$m" 2>/dev/null | grep -q "${DEV}p${PART}"; then
+        mdadm --stop "$m" 2>/dev/null || true
+    fi
+done
+
+# 去标志
+parted "$DEV" --script set "$PART" raid off 2>/dev/null || true
+echo "[trim-fix-p5-flag] 已去掉 ${DEV}p${PART} 的 raid 标志"
+exit 0
+P5FLAGEOF
+chmod 755 "$MNT/usr/local/sbin/trim-fix-p5-flag.sh" 2>/dev/null || true
+
+cat > "$MNT/etc/systemd/system/trim-fix-p5-flag.service" <<'P5SVCEOF'
+[Unit]
+Description=Clear raid GPT flag on data partition (mmcblk0p5)
+DefaultDependencies=no
+Before=local-fs.target trim_init.service
+After=systemd-udevd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/trim-fix-p5-flag.sh
+
+[Install]
+WantedBy=sysinit.target
+P5SVCEOF
+ln -sf ../trim-fix-p5-flag.service \
+  "$MNT/etc/systemd/system/sysinit.target.wants/trim-fix-p5-flag.service" 2>/dev/null || true
+echo "[fix_rootfs] 已装 trim-fix-p5-flag（去掉 data 分区的 raid GPT 标志）"
+
+
 echo "[fix_rootfs] 全部完成"
 exit 0
