@@ -759,107 +759,130 @@ echo "[fix_rootfs] 已装 storage-release.sh + trim_file_monitor 启动顺序修
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/trim-vol1-heal.sh" <<'HEALSH_EOF'
 #!/bin/bash
-# 确保 /vol1 挂载着，但绝不干扰飞牛创建存储空间
+# 兜底挂载 /vol1 —— 用"数据库记录 + 长时间空闲"做判据，绝不抢先
 #
-# 2026-11-26 关键发现（板子实测）：
-#   飞牛创建存储空间的流程：
-#     umount -AR --force /dev/mmcblk0p5   ← 如果 /vol1 已挂载，这一步会失败
-#     mdadm --create /dev/md0
-#     vgcreate / lvcreate
-#     mkfs.btrfs
-#     mount /vol1
+# 2026-11-27 教训（板子实测）：
+#   连续两次抢在飞牛前面挂载，飞牛 mount 报：
+#     [ERROR] mount failed: 17          ← 17 = EBUSY
 #
-#   我们如果在飞牛创建前就挂载 /vol1，飞牛的 umount 就会失败，
-#   整个 [create] 返回 =>1，前端弹"系统内部错误"。
+#   抢跑窗口：lvcreate 结束到 mkfs 开始之间，
+#   pgrep 检测不到任何存储进程，脚本以为可以挂，就抢了。
 #
-#   trim_main 日志实证：
-#     23:31:38 umount -AR --force /dev/mmcblk0p5  WEXITSTATUS=1
-#     23:31:38 umount ... 4 次全失败
-#     23:31:44 [create]=>1: mdadm
+# 正确判据（按飞牛真实流程）：
+#   ① mdadm --create
+#   ② pvcreate / vgcreate / lvcreate
+#   ③ mkfs.btrfs
+#   ④ INSERT INTO mount     ← 数据库出现记录
+#   ⑤ mount /vol1           ← 飞牛自己挂
 #
-# 正确策略：
-#   ① 只在 LV 已经存在且有 btrfs 文件系统时，才尝试 mount
-#   ② 如果 LV 不存在（用户要创建新存储），什么都不做，让飞牛自己来
-#   ③ 如果 /vol1 已经挂载，保持不动
-#   ④ 如果飞牛正在创建（检测到 mdadm/vgcreate/lvcreate/mkfs 进程），暂停操作
+#   所以：数据库 mount 表里有这条记录 = 飞牛已写完状态；
+#         再等 60 秒仍没挂上 = 飞牛自己挂了但失败了 → 兜底挂。
 #
-# 绝不做：mdadm / pvcreate / vgcreate / lvcreate / mkfs / umount
+#   数据库没记录时，绝对不挂。
 
 mkdir -p /vol1
 chmod 755 /vol1 2>/dev/null
 
 _log() { echo "[trim-vol1-heal] $*"; }
 
-# 飞牛是否正在操作存储
-#
-# 2026-11-27 修正：
-#   原来还检查 `pgrep -f /usr/trim/bin/trim`，
-#   但 trim 是常驻主进程，永远在跑 → _busy 永远返回真 → 脚本什么都不做。
-#   板子实测：00:17 md=1 lv=1 vg=1 fs=btrfs 但 mp=NO，就是被这个卡住的。
-#
-#   现在只检测真正的存储操作命令：
 _busy() {
-    # 2026-11-27：mdadm --monitor --scan 是常驻守护进程（不是"正在操作"），
-    # 必须排除，否则 _busy 永远为真，/vol1 永远挂不上。
-    # 板子实测：pgrep -af 只剩 "33115 /sbin/mdadm --monitor --scan"
     local n
     n=$(pgrep -af 'mdadm|vgcreate|lvcreate|mkfs\.btrfs|pvcreate|wipefs' 2>/dev/null \
-        | grep -vE 'mdadm --monitor|pgrep|grep' | wc -l)
+        | grep -vE 'mdadm --monitor|pgrep|grep|trim-vol1-heal' | wc -l)
     [ "$n" -gt 0 ] && return 0
     return 1
 }
 
-# LV 上是否有可挂载的 btrfs
 _has_btrfs() {
-    local lv="$1"
-    blkid "$lv" 2>/dev/null | grep -q 'TYPE="btrfs"' && return 0
+    blkid "$1" 2>/dev/null | grep -q 'TYPE="btrfs"' && return 0
     return 1
 }
 
-_do_mount() {
+_find_lv() {
     local lv
     for lv in /dev/mapper/trim_*-0; do
         [ -e "$lv" ] || continue
-        # 只挂有 btrfs 的（飞牛 mkfs 完才有）
-        _has_btrfs "$lv" || continue
-        if mount "$lv" /vol1 2>/dev/null; then
-            _log "mounted $lv"
-            local d
-            for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
-                mkdir -p "/vol1/$d" 2>/dev/null
-            done
-            return 0
-        fi
+        _has_btrfs "$lv" && { echo "$lv"; return 0; }
     done
     return 1
 }
 
-_log "启动（每 15 秒检查，飞牛操作期间暂停）"
+# 数据库 mount 表里有记录吗
+_db_has_record() {
+    local c
+    c=$(su - postgres -c "psql -d trim -tAc 'SELECT count(*) FROM mount'" 2>/dev/null | tr -d ' \n')
+    [ -n "$c" ] && [ "$c" -gt 0 ] 2>/dev/null && return 0
+    return 1
+}
+
+_try_mount() {
+    mountpoint -q /vol1 2>/dev/null && return 0
+    _busy && return 1
+    _db_has_record || return 1
+
+    local lv
+    lv=$(_find_lv) || return 1
+
+    mkdir -p /vol1 2>/dev/null
+    chmod 755 /vol1 2>/dev/null
+
+    if mount "$lv" /vol1 2>/dev/null; then
+        _log "mounted $lv"
+        local d
+        for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
+            mkdir -p "/vol1/$d" 2>/dev/null
+        done
+        _log "/vol1 ready"
+        return 0
+    fi
+    return 1
+}
+
+_ensure_dirs() {
+    mountpoint -q /vol1 2>/dev/null || return 0
+    local d
+    for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
+        [ -d "/vol1/$d" ] || mkdir -p "/vol1/$d" 2>/dev/null
+    done
+}
+
+_log "启动（兜底：需数据库有记录 + 闲 60 秒）"
+
+# 开机后先等飞牛 triminit 跑完
+sleep 45
 
 _mounted=0
-while true; do
-    # 飞牛正在动存储，别插手
-    if _busy; then
-        sleep 5
-        continue
-    fi
+_quiet=0
 
+while true; do
     if mountpoint -q /vol1 2>/dev/null; then
         if [ "$_mounted" = "0" ]; then
             _log "/vol1 已挂载"
             _mounted=1
         fi
+        _ensure_dirs
+        _quiet=0
     else
         if [ "$_mounted" = "1" ]; then
-            _log "/vol1 丢失挂载，尝试重挂"
+            _log "/vol1 丢失挂载"
             _mounted=0
+            _quiet=0
         fi
-        if _do_mount; then
-            _log "/vol1 ready"
-            _mounted=1
+
+        if _busy; then
+            _quiet=0
+        else
+            _quiet=$((_quiet + 1))
+            # 6 轮 × 10 秒 = 60 秒
+            if [ "$_quiet" -ge 6 ]; then
+                if _try_mount; then
+                    _mounted=1
+                fi
+                _quiet=0
+            fi
         fi
     fi
-    sleep 15
+    sleep 10
 done
 
 HEALSH_EOF
