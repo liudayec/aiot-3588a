@@ -441,29 +441,25 @@ echo "[fix_rootfs] 已装 trim-nca9555-all.service（16 脚兜底）"
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/wan-failover.sh" <<'WANEOF'
 #!/bin/bash
-# WAN 自动选路（2026-11-26 改：兼容 NetworkManager 和 systemd-networkd）
+# WAN 自动选路：选真正能访问外网的接口
 #
-# 三网口同时在线，自动选真正能访问外网的那条。
-# 某个口有 IP 但上不了外网时自动让位。
+# 2026-11-27 重写：
+#   原版 CAND_NAMES 硬编码 "Xiaomi_8D9F_5G-wlan0"，实际连接名是
+#   "Xiaomi_8D9F-wlan0"，导致 nmcli 静默失败，
+#   每 5 秒 nmcli con down/up 一次，反而把网络搞坏。
 #
-# 两种网络栈：
-#   NetworkManager    → nmcli con mod route-metric + con up 重新激活
-#   systemd-networkd  → ip route replace metric
-#   都没有          → 直接 ip route
+#   新版：按设备名反查真实连接名，拿不到就跳过，绝不空转。
 #
-# 轮询间隔 5 秒（trim-wan-failover.service 里控制）
+# 2026-11-27 优先级：eth0 > wlan0 > usb0
+#   有线最稳、不耗流量、带宽大
 
 TEST_HOSTS="223.5.5.5 8.8.8.8"
-CAND_IFS=("wlan0" "usb0" "eth0")
-CAND_NAMES=("Xiaomi_8D9F_5G-wlan0" "4G-USB0" "Wired connection 1")
+CAND_IFS=("eth0" "wlan0" "usb0")
 GOOD_METRIC=50
 BAD_METRIC=600
 
-# 检测网络栈
 HAS_NM=0
-HAS_NETWORKD=0
 command -v nmcli >/dev/null 2>&1 && HAS_NM=1
-systemctl is-active --quiet systemd-networkd 2>/dev/null && HAS_NETWORKD=1
 
 net_ok() {
     local ifc="$1" h
@@ -475,58 +471,60 @@ net_ok() {
     return 1
 }
 
+# 按设备名反查 NetworkManager 连接名
+nm_name() {
+    nmcli -t -f NAME,DEVICE con show 2>/dev/null \
+        | awk -F: -v d="$1" '$2==d{print $1; exit}'
+}
+
+set_metric() {
+    local ifc="$1" m="$2"
+    local cur have gw realname
+
+    if [ "$HAS_NM" = "1" ]; then
+        realname=$(nm_name "$ifc")
+        [ -z "$realname" ] && return 0
+
+        cur=$(nmcli -g ipv4.route-metric con show "$realname" 2>/dev/null)
+        [ "$cur" = "$m" ] && return 0
+
+        nmcli con mod "$realname" ipv4.route-metric "$m" 2>/dev/null || return 0
+
+        if nmcli -t -f DEVICE,STATE dev status 2>/dev/null | grep -q "^${ifc}:connected"; then
+            nmcli con down "$realname" >/dev/null 2>&1
+            sleep 1
+            nmcli con up "$realname" >/dev/null 2>&1
+            echo "[wan-failover] ${ifc}(${realname}) metric ${cur:-无} -> ${m} (重新激活)"
+        else
+            echo "[wan-failover] ${ifc}(${realname}) metric ${cur:-无} -> ${m} (仅改配置)"
+        fi
+    else
+        gw=$(ip route show default dev "$ifc" 2>/dev/null | awk '{print $3}' | head -1)
+        [ -z "$gw" ] && return 0
+        have=$(ip route show default dev "$ifc" 2>/dev/null | sed -n 's/.*metric \([0-9]*\).*/\1/p' | head -1)
+        [ "$have" = "$m" ] && return 0
+        ip route replace default via "$gw" dev "$ifc" metric "$m" 2>/dev/null || return 0
+        echo "[wan-failover] ${ifc} 路由 metric ${have:-无} -> ${m}"
+    fi
+}
+
 WINNER=""
-for i in 0 1 2; do
-    if net_ok "${CAND_IFS[$i]}"; then
-        WINNER="${CAND_IFS[$i]}"
+for ifc in "${CAND_IFS[@]}"; do
+    if net_ok "$ifc"; then
+        WINNER="$ifc"
         break
     fi
 done
 
-# 设置某个网口的 metric
-set_metric() {
-    local ifc="$1" name="$2" m="$3"
-    local cur=""
-
-    if [ "$HAS_NM" = "1" ]; then
-        cur=$(nmcli -g ipv4.route-metric con show "$name" 2>/dev/null)
-        if [ "$cur" != "$m" ]; then
-            nmcli con mod "$name" ipv4.route-metric "$m" 2>/dev/null
-            if nmcli -t -f DEVICE,STATE dev status 2>/dev/null | grep -q "^${ifc}:connected"; then
-                nmcli con down "$name" >/dev/null 2>&1
-                sleep 1
-                nmcli con up "$name" >/dev/null 2>&1
-                echo "[wan-failover] ${ifc} metric ${cur} -> ${m} (nmcli 重新激活)"
-            else
-                echo "[wan-failover] ${ifc} metric ${cur} -> ${m} (nmcli 仅改配置)"
-            fi
-        fi
-    else
-        # systemd-networkd 或无 NM：直接改路由表
-        local gw
-        gw=$(ip route show default dev "$ifc" 2>/dev/null | awk '{print $3}' | head -1)
-        if [ -n "$gw" ]; then
-            local have
-            have=$(ip route show default dev "$ifc" 2>/dev/null | grep -oP 'metric \K\d+' | head -1)
-            if [ "$have" != "$m" ]; then
-                ip route replace default via "$gw" dev "$ifc" metric "$m" 2>/dev/null
-                echo "[wan-failover] ${ifc} 路由 metric ${have:-无} -> ${m} (ip route)"
-            fi
-        fi
-    fi
-}
-
-for i in 0 1 2; do
-    ifc="${CAND_IFS[$i]}"
-    name="${CAND_NAMES[$i]}"
+for ifc in "${CAND_IFS[@]}"; do
     if [ "$ifc" = "$WINNER" ]; then
-        set_metric "$ifc" "$name" "$GOOD_METRIC"
+        set_metric "$ifc" "$GOOD_METRIC"
     else
-        set_metric "$ifc" "$name" "$BAD_METRIC"
+        set_metric "$ifc" "$BAD_METRIC"
     fi
 done
 
-echo "[wan-failover] winner=${WINNER:-none} nm=$HAS_NM networkd=$HAS_NETWORKD"
+echo "[wan-failover] winner=${WINNER:-none} nm=$HAS_NM"
 
 WANEOF
 chmod 755 "$MNT/usr/local/sbin/wan-failover.sh" 2>/dev/null || true
@@ -793,10 +791,15 @@ chmod 755 /vol1 2>/dev/null
 _log() { echo "[trim-vol1-heal] $*"; }
 
 # 飞牛是否正在操作存储
+#
+# 2026-11-27 修正：
+#   原来还检查 `pgrep -f /usr/trim/bin/trim`，
+#   但 trim 是常驻主进程，永远在跑 → _busy 永远返回真 → 脚本什么都不做。
+#   板子实测：00:17 md=1 lv=1 vg=1 fs=btrfs 但 mp=NO，就是被这个卡住的。
+#
+#   现在只检测真正的存储操作命令：
 _busy() {
-    pgrep -f 'mdadm|vgcreate|lvcreate|mkfs.btrfs|pvcreate' >/dev/null 2>&1 && return 0
-    pgrep -f '/usr/trim/bin/trim' >/dev/null 2>&1 && \
-        pgrep -f 'mountmgr|storage.hdl' >/dev/null 2>&1 && return 0
+    pgrep -f 'mdadm|vgcreate|lvcreate|mkfs\.btrfs|pvcreate|wipefs' >/dev/null 2>&1 && return 0
     return 1
 }
 
@@ -1453,6 +1456,80 @@ if [ -d "$MNT/lib/modules" ]; then
 fi
 
 echo "[probe-wifi] ================ 探测结束 ================"
+
+
+# ==========================================================================
+# ㉚ 假 zpool / zfs（内核无 CONFIG_ZFS，飞牛每 5 秒 zpool status 失败）
+#
+# 问题实证（板子实测）：
+#   trim_main 每 5 秒执行 zpool status -j --json-int
+#   内核没有 CONFIG_ZFS 模块 → 每次都返回 1
+#   → 飞牛存储状态机卡在 ZFS 检测，mkfs/mount 永远不执行
+#   → 网页"创建存储空间"卡最后一步
+#
+# 现在 /usr/sbin/zpool 真实二进制改名 zpool.real 备份，
+# 换成脚本：status 返回合法的空池 JSON（rc=0），其它子命令返回空（rc=0）。
+# 飞牛就认为"没有 ZFS 池"，直接走 BTRFS 分支。
+#
+# 板子验证：换成假 zpool 后，创建存储空间一次成功。
+#
+# 只对安装了 openzfs-zfsutils 的系统生效（有 /usr/sbin/zpool 才替换）。
+# ==========================================================================
+if [ -f "$MNT/usr/sbin/zpool" ] && [ ! -f "$MNT/usr/sbin/zpool.real" ]; then
+    mv -f "$MNT/usr/sbin/zpool" "$MNT/usr/sbin/zpool.real" 2>/dev/null || true
+
+    cat > "$MNT/usr/sbin/zpool" <<'FAKEZPOOL'
+#!/bin/bash
+# 假 zpool：内核无 CONFIG_ZFS，让 fnOS 的 zpool status 解析成功
+for a in "$@"; do
+    case "$a" in
+        status)
+            cat <<'JSON'
+{"output_version":{"command":"zpool status","vers_major":0,"vers_minor":0},"pools":{}}
+JSON
+            exit 0
+            ;;
+        list|get|iostat|events)
+            echo ""
+            exit 0
+            ;;
+    esac
+done
+echo ""
+exit 0
+FAKEZPOOL
+    chmod 755 "$MNT/usr/sbin/zpool" 2>/dev/null || true
+    echo "[fix_rootfs] 已装假 zpool（zpool.real 备份真实二进制）"
+fi
+
+if [ -f "$MNT/usr/sbin/zfs" ] && [ ! -f "$MNT/usr/sbin/zfs.real" ]; then
+    mv -f "$MNT/usr/sbin/zfs" "$MNT/usr/sbin/zfs.real" 2>/dev/null || true
+
+    cat > "$MNT/usr/sbin/zfs" <<'FAKEZFS'
+#!/bin/bash
+# 假 zfs：同上
+for a in "$@"; do
+    case "$a" in
+        list)
+            cat <<'JSON'
+{"output_version":{"command":"zfs list","vers_major":0,"vers_minor":0},"datasets":{}}
+JSON
+            exit 0
+            ;;
+    esac
+done
+echo ""
+exit 0
+FAKEZFS
+    chmod 755 "$MNT/usr/sbin/zfs" 2>/dev/null || true
+    echo "[fix_rootfs] 已装假 zfs（zfs.real 备份真实二进制）"
+fi
+
+# 同时处理 /usr/bin 下的软链（openzfs 通常 /usr/bin/zpool -> ../sbin/zpool）
+if [ -L "$MNT/usr/bin/zpool" ] || [ -f "$MNT/usr/bin/zpool" ]; then
+    :
+fi
+
 
 echo "[fix_rootfs] 全部完成"
 exit 0
