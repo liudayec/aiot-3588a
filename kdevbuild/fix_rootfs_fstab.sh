@@ -799,7 +799,13 @@ _log() { echo "[trim-vol1-heal] $*"; }
 #
 #   现在只检测真正的存储操作命令：
 _busy() {
-    pgrep -f 'mdadm|vgcreate|lvcreate|mkfs\.btrfs|pvcreate|wipefs' >/dev/null 2>&1 && return 0
+    # 2026-11-27：mdadm --monitor --scan 是常驻守护进程（不是"正在操作"），
+    # 必须排除，否则 _busy 永远为真，/vol1 永远挂不上。
+    # 板子实测：pgrep -af 只剩 "33115 /sbin/mdadm --monitor --scan"
+    local n
+    n=$(pgrep -af 'mdadm|vgcreate|lvcreate|mkfs\.btrfs|pvcreate|wipefs' 2>/dev/null \
+        | grep -vE 'mdadm --monitor|pgrep|grep' | wc -l)
+    [ "$n" -gt 0 ] && return 0
     return 1
 }
 
