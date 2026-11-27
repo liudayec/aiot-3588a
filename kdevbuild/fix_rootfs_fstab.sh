@@ -35,9 +35,13 @@
 #
 # 板子验证：建好 /vol1 后创建存储一次成功。
 
-mkdir -p /vol1
-chmod 755 /vol1
-echo "[fix_rootfs] 已预建 /vol1 挂载点目录"
+# 飞牛最多支持多块硬盘做多个存储空间，挂载点是 /vol<卷ID>
+# 卷 ID 从 1 开始递增，预建 1..9 覆盖绝大多数场景
+for _i in 1 2 3 4 5 6 7 8 9; do
+    mkdir -p "/vol$_i"
+    chmod 755 "/vol$_i"
+done
+echo "[fix_rootfs] 已预建 /vol1 - /vol9 挂载点目录"
 
 # ==========================================================================
 # fix_rootfs_fstab.sh —— 刷机时修正 rootfs 的 fstab 并安装板子侧修复服务
@@ -799,36 +803,30 @@ echo "[fix_rootfs] 已装 storage-release.sh + trim_file_monitor 启动顺序修
 # ==========================================================================
 cat > "$MNT/usr/local/sbin/trim-vol1-heal.sh" <<'HEALSH_EOF'
 #!/bin/bash
-# 兜底挂载 /vol1 —— 用"数据库记录 + 长时间空闲"做判据，绝不抢先
+# 兜底挂载 /vol1 - /vol9 —— 用"数据库记录 + 长时间空闲"做判据，绝不抢先
 #
-# 2026-11-27 教训（板子实测）：
-#   连续两次抢在飞牛前面挂载，飞牛 mount 报：
-#     [ERROR] mount failed: 17          ← 17 = EBUSY
+# 2026-11-27 根因（LD_PRELOAD + 反汇编实证）：
+#   fnOS 的 is_mountpoint() 实现是 faccessat(p, F_OK) != 0，
+#   语义反了：路径"不存在"时返回 true。
+#   stor_create() 里 is_mountpoint("/vol<id>") 为 true 就报
+#   E_MOUNTPOINT_EXISTS(196616) "挂载点已存在"。
 #
-#   抢跑窗口：lvcreate 结束到 mkfs 开始之间，
-#   pgrep 检测不到任何存储进程，脚本以为可以挂，就抢了。
+#   所以 /vol1..N 目录必须先存在（由 fix_rootfs_fstab.sh 开机预建）。
+#   本脚本负责：开机后若卷已建好但没挂载，兜底挂上。
 #
-# 正确判据（按飞牛真实流程）：
-#   ① mdadm --create
-#   ② pvcreate / vgcreate / lvcreate
-#   ③ mkfs.btrfs
-#   ④ INSERT INTO mount     ← 数据库出现记录
-#   ⑤ mount /vol1           ← 飞牛自己挂
+# 支持多块硬盘：/vol1 - /vol9
 #
-#   所以：数据库 mount 表里有这条记录 = 飞牛已写完状态；
-#         再等 60 秒仍没挂上 = 飞牛自己挂了但失败了 → 兜底挂。
-#
-#   数据库没记录时，绝对不挂。
+# 绝不抢先：飞牛创建存储时（有存储进程 / 数据库没记录）绝不动。
 
 mkdir -p /vol1
 chmod 755 /vol1 2>/dev/null
 
-_log() { echo "[trim-vol1-heal] $*"; }
+_log() { echo "[trim-vol-heal] $*"; }
 
 _busy() {
     local n
     n=$(pgrep -af 'mdadm|vgcreate|lvcreate|mkfs\.btrfs|pvcreate|wipefs' 2>/dev/null \
-        | grep -vE 'mdadm --monitor|pgrep|grep|trim-vol1-heal' | wc -l)
+        | grep -vE 'mdadm --monitor|pgrep|grep|trim-vol' | wc -l)
     [ "$n" -gt 0 ] && return 0
     return 1
 }
@@ -838,88 +836,82 @@ _has_btrfs() {
     return 1
 }
 
-_find_lv() {
-    local lv
+# 数据库里该卷的 uuid（按 id 查）
+_db_uuid_of() {
+    local vid="$1"
+    su - postgres -c "psql -d trim -tAc \"SELECT uuid FROM mount WHERE id=$vid\"" 2>/dev/null | tr -d ' \n'
+}
+
+# 把 uuid 映射到实际 LV 设备
+_lv_of_uuid() {
+    local u="$1" lv
     for lv in /dev/mapper/trim_*-0; do
         [ -e "$lv" ] || continue
-        _has_btrfs "$lv" && { echo "$lv"; return 0; }
+        case "$lv" in
+            *"/${u%-0}-0"|*"/${u}") echo "$lv"; return 0 ;;
+        esac
     done
+    # uuid 形如 trim_xxx-0，LV 路径 /dev/mapper/trim_xxx-0
+    ls "/dev/mapper/${u%-0}-0" 2>/dev/null && return 0
+    ls "/dev/mapper/${u}" 2>/dev/null && return 0
     return 1
 }
 
-# 数据库 mount 表里有记录吗
-_db_has_record() {
-    local c
-    c=$(su - postgres -c "psql -d trim -tAc 'SELECT count(*) FROM mount'" 2>/dev/null | tr -d ' \n')
-    [ -n "$c" ] && [ "$c" -gt 0 ] 2>/dev/null && return 0
-    return 1
-}
+# 尝试挂载单卷
+_try_vol() {
+    local vid="$1" mp="/vol$vid" uuid lv
 
-_try_mount() {
-    mountpoint -q /vol1 2>/dev/null && return 0
-    _busy && return 1
-    _db_has_record || return 1
+    mountpoint -q "$mp" 2>/dev/null && return 0
 
-    local lv
-    lv=$(_find_lv) || return 1
+    uuid=$(_db_uuid_of "$vid")
+    [ -z "$uuid" ] && return 1
 
-    mkdir -p /vol1 2>/dev/null
-    chmod 755 /vol1 2>/dev/null
+    lv=$(_lv_of_uuid "$uuid") || return 1
+    [ -e "$lv" ] || return 1
+    _has_btrfs "$lv" || return 1
 
-    if mount "$lv" /vol1 2>/dev/null; then
-        _log "mounted $lv"
+    mkdir -p "$mp" 2>/dev/null
+    chmod 755 "$mp" 2>/dev/null
+
+    if mount "$lv" "$mp" 2>/dev/null; then
+        _log "mounted $lv -> $mp"
         local d
         for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
-            mkdir -p "/vol1/$d" 2>/dev/null
+            mkdir -p "$mp/$d" 2>/dev/null
         done
-        _log "/vol1 ready"
         return 0
     fi
     return 1
 }
 
 _ensure_dirs() {
-    mountpoint -q /vol1 2>/dev/null || return 0
-    local d
+    local mp="$1" d
+    mountpoint -q "$mp" 2>/dev/null || return 0
     for d in @appcenter @appconf @appdata @apphome @appmeta @appshare @apptemp; do
-        [ -d "/vol1/$d" ] || mkdir -p "/vol1/$d" 2>/dev/null
+        [ -d "$mp/$d" ] || mkdir -p "$mp/$d" 2>/dev/null
     done
 }
 
-_log "启动（兜底：需数据库有记录 + 闲 60 秒）"
+_log "启动（兜底多卷 /vol1-9：需数据库有记录 + 闲 60 秒）"
 
-# 开机后先等飞牛 triminit 跑完
 sleep 45
 
-_mounted=0
 _quiet=0
 
 while true; do
-    if mountpoint -q /vol1 2>/dev/null; then
-        if [ "$_mounted" = "0" ]; then
-            _log "/vol1 已挂载"
-            _mounted=1
-        fi
-        _ensure_dirs
+    if _busy; then
         _quiet=0
     else
-        if [ "$_mounted" = "1" ]; then
-            _log "/vol1 丢失挂载"
-            _mounted=0
-            _quiet=0
-        fi
-
-        if _busy; then
-            _quiet=0
-        else
-            _quiet=$((_quiet + 1))
-            # 6 轮 × 10 秒 = 60 秒
-            if [ "$_quiet" -ge 6 ]; then
-                if _try_mount; then
-                    _mounted=1
+        _quiet=$((_quiet + 1))
+        if [ "$_quiet" -ge 6 ]; then
+            for _v in 1 2 3 4 5 6 7 8 9; do
+                if mountpoint -q "/vol$_v" 2>/dev/null; then
+                    _ensure_dirs "/vol$_v"
+                else
+                    _try_vol "$_v"
                 fi
-                _quiet=0
-            fi
+            done
+            _quiet=0
         fi
     fi
     sleep 10
