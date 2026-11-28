@@ -1056,7 +1056,9 @@ _ensure_appdirs() {
 }
 
 _try_mount() {
-    local vid="$1" mp="/vol$vid" lv
+    local vid="$1"
+    local mp="/vol$vid"
+    local lv
     mountpoint -q "$mp" 2>/dev/null && return 0
     lv=$(_lv_of_vid "$vid") || return 1
     [ -e "$lv" ] || return 1
