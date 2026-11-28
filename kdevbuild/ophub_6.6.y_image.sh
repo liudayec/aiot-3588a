@@ -160,6 +160,21 @@ du -sh kernel-headers
 # 鏇存柊rootfs
 # ============================================================
 mount "${WORKDIR}/rockdev/rootfs.img" /mnt
+
+# NPU 运行时库 librknnrt.so（RKNN SDK，用户态）
+# 内核 CONFIG_ROCKCHIP_RKNPU=y 已经编进去了，缺的就是这个用户态库
+NPU_LIB="$(cd "$(dirname "$0")" && pwd)/back/librknnrt.so"
+if [ -f "$NPU_LIB" ]; then
+    mkdir -p /mnt/usr/lib
+    # 注意：必须放 /usr/lib，不能放 /usr/lib/aarch64-linux-gnu
+    # （rknn_server / 各发行版的 ld.so 路径差异，放 /usr/lib 兼容性最好）
+    cp -f "$NPU_LIB" /mnt/usr/lib/librknnrt.so
+    chmod 755 /mnt/usr/lib/librknnrt.so
+    echo "[npu] 已装 librknnrt.so: $(stat -c%s /mnt/usr/lib/librknnrt.so) 字节"
+else
+    echo "[npu] 警告: $NPU_LIB 不存在，跳过 NPU 运行时库"
+fi
+
 # ---- 琛ヤ竵锛氫慨姝?rootfs 鐨?fstab锛圠ABEL=kdevboot + x-systemd.growfs锛?---
 bash "$(cd "$(dirname "$0")" && pwd)/fix_rootfs_fstab.sh" /mnt || true
 # update rootfs with kernel modules
